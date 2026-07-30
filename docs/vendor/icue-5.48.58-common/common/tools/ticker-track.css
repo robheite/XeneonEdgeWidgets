@@ -1,0 +1,151 @@
+/******************************************************************************
+ **
+ ** File      ticker-track.css
+ ** Author    Maksym Aldokhin
+ ** Copyright (c) 2026, Corsair Memory, Inc. All Rights Reserved.
+ **
+ ** This file is part of Corsair iCUE Software.
+ **
+ ******************************************************************************/
+
+/**
+ * Ticker Track CSS - Reusable scrolling text component
+ *
+ * Usage:
+ * 1. Include this CSS file in your HTML: <link rel="stylesheet" href="tools/ticker-track.css">
+ * 2. Use the HTML structure:
+ *    <div class="ticker" id="ticker">
+ *        <div class="ticker-track" id="tickerTrack">
+ *            <span class="ticker-item" id="tickerText">Your text here</span>
+ *        </div>
+ *    </div>
+ * 3. Include ticker-tracker.js for functionality: <script src="tools/ticker-tracker.js"></script>
+ * 4. Initialize: TickerTracker.init('ticker', 'tickerTrack', 'tickerText');
+ *
+ * Vertical Alignment:
+ * - CSS: Set --vertical-align custom property (e.g., --vertical-align: 20%)
+ * - JavaScript: TickerTracker.setVerticalAlign('top'|'center'|'bottom'|'header'|'footer'|percentage)
+ * - CSS Classes: Add .align-top, .align-center, .align-bottom, .position-header, .position-footer
+ */
+
+.ticker {
+	/* CSS Custom Properties for configuration */
+	--gap: 32px; /* Gap between repeated text items */
+	--speed: 0; /* Pixels per second scrolling speed */
+	--ticker-text-color: #ffffff; /* Text color (can be overridden) */
+	--ticker-text-opacity: 1; /* Text opacity (can be overridden) */
+	--font-size: 9vmin; /* Font size (can be overridden) */
+	--font-family: OpenSansSemiBold, sans-serif; /* Font family (can be overridden) */
+	--font-weight: 600; /* Font weight (can be overridden) */
+	--vertical-align: 30%; /* Vertical position (top, center, bottom, or percentage) */
+	--view-max-width: 80vmin; /* Horizontal width of text field */
+
+	/* Container positioning and styling */
+	position: absolute;
+	top: var(--vertical-align);
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	/* Responsive sizing */
+	width: var(--view-max-width);
+	max-width: var(--view-max-width);
+
+	/* Layout */
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+
+	/* Styling */
+	background: transparent;
+	color: var(--ticker-text-color);
+	opacity: var(--ticker-text-opacity);
+	font-family: var(--font-family);
+	box-sizing: border-box;
+
+	/* Note: Accessibility attributes should be set in HTML:
+	   tabindex="0" role="region" aria-live="polite" aria-label="scrolling custom text" */
+}
+
+.ticker-track {
+	/* Layout for text items */
+	display: inline-flex;
+	align-items: center;
+	white-space: nowrap;
+	gap: var(--gap);
+
+	/* Performance optimization */
+	will-change: transform;
+	min-width: 100%;
+}
+
+.ticker-item {
+	/* Text item styling */
+	display: inline-block;
+	white-space: nowrap;
+	color: var(--ticker-text-color);
+	font-weight: var(--font-weight);
+	font-size: var(--font-size);
+
+	/* Prevent text compression */
+	flex-shrink: 0;
+}
+
+/* Scrolling animation for overflowing text */
+.is-scrolling .ticker-track {
+	animation-name: ticker-scroll;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-play-state: running;
+	animation-duration: var(--duration, 10s);
+	justify-content: flex-start;
+}
+
+/* Pause animation on hover/focus for accessibility */
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track {
+	animation-play-state: paused;
+}
+
+/* Keyframe animation for horizontal scrolling */
+@keyframes ticker-scroll {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(calc(var(--shift) * -1));
+	}
+}
+
+/* Centered text when not scrolling */
+.not-scrolling .ticker-track {
+	animation: none;
+	transform: none;
+	justify-content: center;
+	width: 100%;
+}
+
+.not-scrolling .ticker-item {
+	text-align: center;
+}
+
+/* Print styles */
+@media print {
+	.ticker {
+		position: static;
+		transform: none;
+		width: 100%;
+		max-width: none;
+		height: auto;
+		overflow: visible;
+	}
+
+	.ticker-track {
+		animation: none !important;
+		transform: none !important;
+		justify-content: center;
+	}
+
+	.ticker-item:not(:first-child) {
+		display: none; /* Hide cloned items in print */
+	}
+}

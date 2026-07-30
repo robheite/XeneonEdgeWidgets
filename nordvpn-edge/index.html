@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>tr('NordVPN Edge')</title>
+  <link rel="icon" href="resources/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <meta name="x-icue-property" content="serviceUrl" data-label="tr('Companion service URL')" data-type="textfield" data-default="'http://127.0.0.1:48620'" />
+  <meta name="x-icue-property" content="startWithWindows" data-label="tr('Start companion with Windows')" data-type="switch" data-default="false" />
+  <meta name="x-icue-property" content="pauseMinutes" data-label="tr('Pause duration')" data-type="combobox" data-default="5" data-values="[{'key':5,'value':'5 min'},{'key':15,'value':'15 min'},{'key':30,'value':'30 min'},{'key':60,'value':'60 min'}]" />
+  <meta name="x-icue-property" content="accentColor" data-label="tr('Accent color')" data-type="color" data-default="'#4d8dff'" />
+  <meta name="x-icue-property" content="backgroundColor" data-label="tr('Background color')" data-type="color" data-default="'#07111f'" />
+  <meta name="x-icue-property" content="backgroundOpacity" data-label="tr('Background opacity')" data-type="slider" data-default="100" data-min="20" data-max="100" data-step="5" data-unit-label="'%'" />
+  <meta name="x-icue-property" content="density" data-label="tr('Density')" data-type="combobox" data-default="'comfortable'" data-values="[{'key':'comfortable','value':tr('Comfortable')},{'key':'compact','value':tr('Compact')}]" />
+  <meta name="x-icue-property" content="speedUnit" data-label="tr('Speed unit')" data-type="combobox" data-default="'MBps'" data-values="[{'key':'MBps','value':'MB/s'},{'key':'Mbps','value':'Mb/s'}]" />
+  <meta name="x-icue-property" content="showRouterIdentity" data-label="tr('Show WAN identity')" data-type="switch" data-default="true" />
+  <meta name="x-icue-property" content="showThroughputChart" data-label="tr('Show throughput chart')" data-type="switch" data-default="true" />
+  <script id="x-icue-groups" type="application/json">
+  [
+    {
+      "title": "tr('NordVPN Edge')",
+      "properties": ["serviceUrl", "startWithWindows", "pauseMinutes"]
+    },
+    {
+      "title": "tr('Appearance')",
+      "properties": ["accentColor", "backgroundColor", "backgroundOpacity", "density", "speedUnit", "showRouterIdentity", "showThroughputChart"]
+    }
+  ]
+  </script>
+</head>
+<body>
+  <main class="dashboard" aria-label="NordVPN network dashboard">
+    <section class="connection-panel" aria-labelledby="connection-title">
+      <div class="eyebrow">
+        <span id="status-dot" class="status-dot" aria-hidden="true"></span>
+        <span id="connection-title">NordVPN</span>
+        <button id="service-button" class="service-button is-offline" type="button">
+          <span class="service-button-dot" aria-hidden="true"></span>
+          <span id="updated-at">Start service</span>
+        </button>
+      </div>
+
+      <div class="connection-copy">
+        <p id="status-label" class="status-label">Checking protection…</p>
+        <h1 id="server-name">Companion offline</h1>
+        <p id="connection-detail" class="connection-detail">Start the local service to read NordVPN status.</p>
+        <p id="server-location" class="server-location" hidden></p>
+      </div>
+
+      <p id="action-message" class="action-message" role="status" aria-live="polite"></p>
+      <div class="actions" aria-label="VPN controls">
+        <button id="pause-button" class="action action-secondary" type="button" disabled>
+          <span class="pause-icon" aria-hidden="true"></span>
+          <span id="pause-label">Pause 5 min</span>
+        </button>
+        <button id="fastest-button" class="action action-primary" type="button" disabled>
+          <span class="bolt" aria-hidden="true">ϟ</span>
+          Fastest US
+        </button>
+      </div>
+    </section>
+
+    <section class="identity-panel" aria-labelledby="identity-title">
+      <div class="section-heading">
+        <span id="identity-title">Network identity</span>
+        <span id="identity-verdict" class="verdict">Not verified</span>
+      </div>
+
+      <div class="route">
+        <div class="route-node route-node-active">
+          <span class="node-label">This PC · VPN exit</span>
+          <strong id="machine-ip">—</strong>
+          <span id="machine-location" class="node-meta">Waiting for IP</span>
+        </div>
+        <div class="route-link" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="route-node">
+          <span class="node-label">WAN · public IP</span>
+          <strong id="router-ip">—</strong>
+          <span id="router-source" class="node-meta">Discovering WAN</span>
+        </div>
+      </div>
+      <p id="identity-note" class="identity-note">Checking UPnP IGD and NAT-PMP.</p>
+    </section>
+
+    <section class="speed-panel" aria-labelledby="speed-title">
+      <div class="section-heading">
+        <span id="speed-title">Live throughput</span>
+        <span id="speed-unit" class="unit">MB/s</span>
+      </div>
+      <div class="speed-readouts">
+        <div class="speed-value">
+          <span class="direction down" aria-hidden="true">↓</span>
+          <span>
+            <small>Down</small>
+            <strong id="download-speed">0.00</strong>
+          </span>
+        </div>
+        <div class="speed-value">
+          <span class="direction up" aria-hidden="true">↑</span>
+          <span>
+            <small>Up</small>
+            <strong id="upload-speed">0.00</strong>
+          </span>
+        </div>
+      </div>
+      <svg id="speed-chart" viewBox="0 0 520 132" role="img" aria-label="Recent download and upload throughput">
+        <path class="chart-grid" d="M0 25H520M0 66H520M0 107H520"></path>
+        <path id="download-line" class="chart-line download-line" d=""></path>
+        <path id="upload-line" class="chart-line upload-line" d=""></path>
+      </svg>
+    </section>
+  </main>
+
+  <script src="scripts/main.js"></script>
+  <script>
+    pluginLinkproviderEvents = {
+      onInitialized: function() {}
+    };
+
+    icueEvents = {
+      onICUEInitialized: function(payload) { applySettings(payload && payload.settings, false); },
+      onDataUpdated: function(payload) { applySettings(payload && payload.settings, true); },
+    };
+
+    if (typeof iCUE_initialized !== "undefined" && iCUE_initialized) {
+      applySettings();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+node_modules/
+*.icuewidget
+*.log
+.vs/
+.vscode/
+**/bin/
+**/obj/
+artifacts/
+dist/
+installer/output/

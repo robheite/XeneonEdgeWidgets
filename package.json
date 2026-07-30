@@ -1,0 +1,26 @@
+{
+  "name": "icue-xeneon-edge",
+  "version": "1.0.0",
+  "description": "Development workspace for CORSAIR iCUE widgets targeting XENEON EDGE.",
+  "private": true,
+  "scripts": {
+    "docs:sync": "node scripts/sync-icue-docs.mjs",
+    "docs:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-release-docs.ps1",
+    "companion:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-companion.ps1",
+    "companion:test": "dotnet test companion/EdgeCompanion.sln --configuration Release",
+    "widget:init": "icuewidget init",
+    "widget:validate": "icuewidget validate",
+    "widget:package": "icuewidget package"
+  },
+  "keywords": [
+    "corsair",
+    "icue",
+    "xeneon-edge",
+    "widgets"
+  ],
+  "license": "UNLICENSED",
+  "type": "module",
+  "devDependencies": {
+    "icuewidget-cli": "^0.4.47"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "source": "https://docs.elgato.com/icue/widgets/",
+  "syncedAt": "2026-07-30T19:39:22.730Z",
+  "pages": [
+    {
+      "source": "https://docs.elgato.com/icue/widgets/",
+      "file": "docs/vendor/elgato-icue-widgets/getting-started/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/common-tools",
+      "file": "docs/vendor/elgato-icue-widgets/references/common-tools/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/color",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/color/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/combobox",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/combobox/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/media-selector",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/media-selector/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/search-combobox",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/search-combobox/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/sensors-combobox",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/sensors-combobox/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/sensors-factory",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/sensors-factory/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/slider",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/slider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/switch",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/switch/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/tab-buttons",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/tab-buttons/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/controls/textfield",
+      "file": "docs/vendor/elgato-icue-widgets/references/controls/textfield/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/device-object",
+      "file": "docs/vendor/elgato-icue-widgets/references/device-object/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/icue-global-object",
+      "file": "docs/vendor/elgato-icue-widgets/references/icue-global-object/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/javascript-expressions",
+      "file": "docs/vendor/elgato-icue-widgets/references/javascript-expressions/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/local-storage",
+      "file": "docs/vendor/elgato-icue-widgets/references/local-storage/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/device-action-provider",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/device-action-provider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/fps-data-provider",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/fps-data-provider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/link-provider",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/link-provider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/media-data-provider",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/media-data-provider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/sensors-data-provider",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/sensors-data-provider/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/plugins/stream-deck",
+      "file": "docs/vendor/elgato-icue-widgets/references/plugins/stream-deck/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/references/translations",
+      "file": "docs/vendor/elgato-icue-widgets/references/translations/index.html"
+    },
+    {
+      "source": "https://docs.elgato.com/icue/widgets/specification",
+      "file": "docs/vendor/elgato-icue-widgets/specification/index.html"
+    }
+  ]
+}

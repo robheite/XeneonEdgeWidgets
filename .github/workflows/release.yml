@@ -1,0 +1,149 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, for example v1.0.0
+        required: true
+        type: string
+      prerelease:
+        description: Mark this as a prerelease
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Validate, package, and release
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ($env:RELEASE_TAG -notmatch '^v\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$') {
+            throw "Tag must be a semantic version beginning with v, such as v1.0.0."
+          }
+          gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            throw "Release $env:RELEASE_TAG already exists."
+          }
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install locked tooling
+        run: npm ci
+
+      - name: Verify release documentation
+        run: npm run docs:verify
+
+      - name: Test companion
+        run: dotnet test companion/EdgeCompanion.sln --configuration Release
+
+      - name: Package widgets
+        shell: pwsh
+        run: |
+          $widgetOutput = Join-Path $env:RUNNER_TEMP 'widgets'
+          New-Item -ItemType Directory -Path $widgetOutput | Out-Null
+          $widgets = Get-ChildItem -LiteralPath $env:GITHUB_WORKSPACE -Directory |
+            Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'manifest.json') }
+          if (-not $widgets) {
+            throw 'No widget directories were found.'
+          }
+          foreach ($widget in $widgets) {
+            npm run widget:validate -- $widget.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            npm run widget:package -- $widget.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $package = Join-Path $env:GITHUB_WORKSPACE "$($widget.Name).icuewidget"
+            if (-not (Test-Path -LiteralPath $package)) {
+              throw "Expected widget package was not created: $package"
+            }
+            Copy-Item -LiteralPath $package -Destination $widgetOutput
+          }
+          $archive = Join-Path $env:GITHUB_WORKSPACE "xeneon-edge-widgets-${{ inputs.tag }}.zip"
+          Compress-Archive -Path (Join-Path $widgetOutput '*.icuewidget') -DestinationPath $archive
+
+      - name: Publish companion
+        shell: pwsh
+        run: |
+          $version = '${{ inputs.tag }}'.TrimStart('v')
+          $publishOutput = Join-Path $env:RUNNER_TEMP 'edge-companion'
+          dotnet publish companion/src/EdgeCompanion.Host/EdgeCompanion.Host.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output $publishOutput `
+            -p:Version=$version `
+            -p:OutputType=WinExe `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build and test companion installer
+        shell: pwsh
+        run: |
+          choco install innosetup --version=6.7.1 --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $version = '${{ inputs.tag }}'.TrimStart('v')
+          $publishOutput = Join-Path $env:RUNNER_TEMP 'edge-companion'
+          $installerOutput = Join-Path $env:RUNNER_TEMP 'edge-companion-installer'
+          $installer = & ./scripts/build-companion-installer.ps1 `
+            -PublishDirectory $publishOutput `
+            -Version $version `
+            -OutputDirectory $installerOutput
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          & ./scripts/test-companion-installer.ps1 -InstallerPath $installer
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          Copy-Item -LiteralPath installer/README.txt -Destination $installerOutput
+          $archive = Join-Path $env:GITHUB_WORKSPACE "edge-companion-win-x64-${{ inputs.tag }}.zip"
+          Compress-Archive -Path (Join-Path $installerOutput '*') -DestinationPath $archive
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          IS_PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          $arguments = @(
+            'release', 'create', $env:RELEASE_TAG,
+            "xeneon-edge-widgets-$env:RELEASE_TAG.zip",
+            "edge-companion-win-x64-$env:RELEASE_TAG.zip",
+            '--repo', $env:GITHUB_REPOSITORY,
+            '--target', $env:GITHUB_SHA,
+            '--title', "XENEON EDGE Widgets $env:RELEASE_TAG",
+            '--generate-notes'
+          )
+          if ($env:IS_PRERELEASE -eq 'true') {
+            $arguments += '--prerelease'
+          }
+          gh @arguments
