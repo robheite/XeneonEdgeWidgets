@@ -44,6 +44,9 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             throw "Release $env:RELEASE_TAG already exists."
           }
+          # A missing release is the expected success path. Clear gh's lookup
+          # exit code so PowerShell does not fail the otherwise successful step.
+          $global:LASTEXITCODE = 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
