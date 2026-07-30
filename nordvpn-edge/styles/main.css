@@ -1,0 +1,733 @@
+:root {
+  --night: #07111f;
+  --panel: #0d1a2b;
+  --panel-raised: #122238;
+  --line: rgba(206, 226, 255, 0.12);
+  --line-strong: rgba(206, 226, 255, 0.2);
+  --text: #f4f8ff;
+  --secondary: #adc0d8;
+  --muted: #7187a3;
+  --nord: #4d8dff;
+  --panel-opacity: 100%;
+  --nord-soft: rgba(77, 141, 255, 0.15);
+  --safe: #48d6a0;
+  --warn: #ffbd62;
+  --danger: #ff6f7d;
+  --spacing: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: var(--night);
+  color: var(--text);
+  font-family: "Bahnschrift", "Segoe UI Variable", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 0.86fr 1.06fr 1.18fr;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(52, 104, 190, 0.16), transparent 30%),
+    var(--night);
+}
+
+.connection-panel,
+.identity-panel,
+.speed-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--panel) var(--panel-opacity), transparent);
+}
+
+.connection-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+}
+
+.eyebrow,
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--secondary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.service-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel-raised);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.service-button.is-offline {
+  color: var(--warn);
+  cursor: pointer;
+}
+
+.service-button.is-offline:hover {
+  background: #172a43;
+}
+
+.service-button.is-offline:active {
+  transform: scale(0.97);
+}
+
+.service-button:focus-visible {
+  outline: 3px solid rgba(77, 141, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.service-button:disabled {
+  opacity: 1;
+}
+
+.service-button-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--warn);
+}
+
+.service-button.is-online .service-button-dot {
+  background: var(--safe);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  box-shadow: 0 0 0 6px rgba(113, 135, 163, 0.1);
+}
+
+.status-dot.connected {
+  background: var(--safe);
+  box-shadow: 0 0 0 6px rgba(72, 214, 160, 0.12);
+}
+
+.status-dot.error {
+  background: var(--danger);
+  box-shadow: 0 0 0 6px rgba(255, 111, 125, 0.12);
+}
+
+.connection-copy {
+  margin-top: 92px;
+}
+
+.status-label {
+  margin: 0 0 10px;
+  color: var(--safe);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-size: 50px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.connection-detail {
+  margin: 18px 0 0;
+  color: var(--secondary);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.server-location {
+  margin: 7px 0 0;
+  color: var(--text);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.action {
+  min-height: 58px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+  touch-action: manipulation;
+  font-size: 16px;
+  font-weight: 650;
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.action:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.action:focus-visible {
+  outline: 3px solid rgba(77, 141, 255, 0.55);
+  outline-offset: 3px;
+}
+
+.action:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.action-secondary {
+  background: var(--panel-raised);
+}
+
+.action-secondary:hover:not(:disabled) {
+  background: #172a43;
+}
+
+.action-primary {
+  border-color: transparent;
+  background: var(--nord);
+}
+
+.action-primary:hover:not(:disabled) {
+  background: #66a0ff;
+}
+
+.pause-icon {
+  display: inline-block;
+  width: 10px;
+  height: 15px;
+  margin-right: 8px;
+  border-right: 3px solid currentColor;
+  border-left: 3px solid currentColor;
+  vertical-align: -2px;
+}
+
+.bolt {
+  margin-right: 6px;
+}
+
+.action-message {
+  min-height: 18px;
+  margin: auto 0 10px;
+  color: var(--secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.identity-panel,
+.speed-panel {
+  padding: 30px;
+}
+
+.verdict,
+.unit {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.verdict.verified {
+  color: var(--safe);
+}
+
+.route {
+  display: grid;
+  grid-template-rows: auto 56px auto;
+  margin-top: 44px;
+}
+
+.route-node {
+  display: grid;
+  min-height: 174px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel-raised);
+}
+
+.route-node-active {
+  border-color: rgba(77, 141, 255, 0.42);
+  background: var(--nord-soft);
+}
+
+.node-label {
+  color: var(--secondary);
+  font-size: 14px;
+}
+
+.route-node strong {
+  align-self: center;
+  overflow: hidden;
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-meta {
+  align-self: end;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.route-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.route-link span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--nord);
+}
+
+.identity-note {
+  margin: 24px 4px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.hide-router .route-link,
+.hide-router .route-node:not(.route-node-active) {
+  display: none;
+}
+
+.hide-router .route {
+  grid-template-rows: auto;
+}
+
+.hide-router .identity-note {
+  display: none;
+}
+
+.speed-readouts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin-top: 62px;
+}
+
+.speed-value {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.direction {
+  font-size: 32px;
+  font-weight: 400;
+}
+
+.down {
+  color: var(--nord);
+}
+
+.up {
+  color: var(--safe);
+}
+
+.speed-value span:last-child {
+  display: grid;
+}
+
+.speed-value small {
+  color: var(--secondary);
+  font-size: 13px;
+}
+
+.speed-value strong {
+  margin-top: 2px;
+  font-size: 50px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  letter-spacing: -0.05em;
+}
+
+#speed-chart {
+  width: 100%;
+  height: 250px;
+  margin-top: 52px;
+  overflow: visible;
+}
+
+.chart-grid {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.download-line {
+  stroke: var(--nord);
+}
+
+.upload-line {
+  stroke: var(--safe);
+  stroke-width: 3;
+}
+
+.hide-chart #speed-chart {
+  display: none;
+}
+
+.hide-chart .speed-readouts {
+  margin-top: 150px;
+}
+
+.density-compact .dashboard {
+  gap: 10px;
+  padding: 14px;
+}
+
+.density-compact .connection-panel,
+.density-compact .identity-panel,
+.density-compact .speed-panel {
+  padding: 22px;
+}
+
+.density-compact .connection-copy {
+  margin-top: 56px;
+}
+
+.density-compact .speed-readouts {
+  margin-top: 44px;
+}
+
+@media (max-width: 1240px) {
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .connection-panel {
+    grid-row: 1 / 3;
+  }
+
+  .identity-panel,
+  .speed-panel {
+    padding: 20px;
+  }
+
+  .route {
+    grid-template-columns: 1fr 32px 1fr;
+    grid-template-rows: auto;
+    margin-top: 20px;
+  }
+
+  .route-node {
+    min-height: 164px;
+    padding: 18px;
+  }
+
+  .route-node strong {
+    font-size: 20px;
+  }
+
+  .route-link {
+    flex-direction: row;
+  }
+
+  .identity-note {
+    margin-top: 14px;
+  }
+
+  .speed-readouts {
+    margin-top: 28px;
+  }
+
+  .speed-value strong {
+    font-size: 38px;
+  }
+
+  #speed-chart {
+    height: 110px;
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard {
+    display: block;
+    padding: 12px;
+  }
+
+  .connection-panel {
+    height: 100%;
+    padding: 22px;
+  }
+
+  .identity-panel,
+  .speed-panel {
+    display: none;
+  }
+
+  .connection-copy {
+    margin-top: min(12vh, 56px);
+  }
+
+  h1 {
+    font-size: clamp(32px, 9vw, 48px);
+  }
+}
+
+@media (max-height: 430px) {
+  .dashboard {
+    padding: 10px;
+  }
+
+  .connection-panel,
+  .identity-panel,
+  .speed-panel {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .connection-copy {
+    margin-top: 24px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  .connection-detail {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  .server-location {
+    margin-top: 5px;
+    font-size: 13px;
+  }
+
+  .action {
+    min-height: 46px;
+  }
+
+  .route {
+    margin-top: 14px;
+  }
+
+  .route-node {
+    min-height: 120px;
+  }
+
+  .identity-note,
+  #speed-chart {
+    display: none;
+  }
+
+  .speed-readouts {
+    margin-top: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    transition: none;
+  }
+}
+
+/* iCUE's editor scales the 1688 × 696 device canvas non-uniformly. These
+   overrides make its preview choose the same logical composition as hardware. */
+.preview-mode .dashboard {
+  width: 175.44%;
+  height: 263.16%;
+  transform: scale(0.57, 0.38);
+  transform-origin: top left;
+}
+
+.preview-mode.layout-medium .dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+
+.preview-mode.layout-medium .connection-panel {
+  display: flex;
+  grid-row: 1 / 3;
+  height: auto;
+  padding: 32px;
+}
+
+.preview-mode.layout-medium .identity-panel,
+.preview-mode.layout-medium .speed-panel {
+  display: block;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.preview-mode.layout-medium .connection-copy {
+  margin-top: 64px;
+}
+
+.preview-mode.layout-medium h1 {
+  font-size: 44px;
+}
+
+.preview-mode.layout-medium .connection-detail {
+  margin-top: 14px;
+  font-size: 16px;
+}
+
+.preview-mode.layout-medium .action {
+  min-height: 52px;
+}
+
+.preview-mode.layout-medium .route {
+  grid-template-columns: 1fr 32px 1fr;
+  grid-template-rows: auto;
+  margin-top: 20px;
+}
+
+.preview-mode.layout-medium .route-node {
+  min-height: 150px;
+  padding: 18px;
+}
+
+.preview-mode.layout-medium .route-link {
+  flex-direction: row;
+}
+
+.preview-mode.layout-medium .identity-note {
+  display: block;
+  margin-top: 14px;
+}
+
+.preview-mode.layout-medium .speed-readouts {
+  margin-top: 28px;
+}
+
+.preview-mode.layout-medium #speed-chart {
+  display: block;
+  height: 110px;
+  margin-top: 18px;
+}
+
+.preview-mode.layout-wide .dashboard {
+  display: grid;
+  grid-template-columns: 0.86fr 1.06fr 1.18fr;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+
+.preview-mode.layout-wide .connection-panel {
+  display: flex;
+  grid-row: auto;
+  height: auto;
+  padding: 32px;
+}
+
+.preview-mode.layout-wide .identity-panel,
+.preview-mode.layout-wide .speed-panel {
+  display: block;
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.preview-mode.layout-wide .connection-copy {
+  margin-top: 92px;
+}
+
+.preview-mode.layout-wide h1 {
+  font-size: 50px;
+}
+
+.preview-mode.layout-wide .connection-detail {
+  margin-top: 18px;
+  font-size: 17px;
+}
+
+.preview-mode.layout-wide .action {
+  min-height: 58px;
+}
+
+.preview-mode.layout-wide .route {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 56px auto;
+  margin-top: 44px;
+}
+
+.preview-mode.layout-wide .route-node {
+  min-height: 174px;
+  padding: 26px;
+}
+
+.preview-mode.layout-wide .route-link {
+  flex-direction: column;
+}
+
+.preview-mode.layout-wide .identity-note {
+  display: block;
+  margin-top: 24px;
+}
+
+.preview-mode.layout-wide .speed-readouts {
+  margin-top: 62px;
+}
+
+.preview-mode.layout-wide #speed-chart {
+  display: block;
+  height: 250px;
+  margin-top: 52px;
+}

@@ -1,0 +1,28 @@
+/******************************************************************************
+ **
+ ** File      MediaViewer.css
+ ** Author    Maksym Aldokhin
+ ** Copyright (c) 2026, Corsair Memory, Inc. All Rights Reserved.
+ **
+ ** This file is part of Corsair iCUE Software.
+ **
+ ******************************************************************************/
+
+.position-container {
+	position: absolute;
+	transform-origin: top left;
+}
+
+.scale-container {
+	transform-origin: top left;
+}
+
+.rotation-container {
+	transform-origin: center center;
+}
+
+.rotation-container img,
+.rotation-container video {
+	display: block;
+	object-fit: contain;
+}
