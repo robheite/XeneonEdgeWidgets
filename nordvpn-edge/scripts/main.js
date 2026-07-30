@@ -5,6 +5,7 @@ const state = {
   startWithWindows: false,
   pauseMinutes: 5,
   accentColor: "#4d8dff",
+  backgroundColor: "#07111f",
   backgroundOpacity: 100,
   density: "comfortable",
   speedUnit: "MBps",
@@ -60,7 +61,10 @@ function applySettings(settings = {}, allowStartupChange = false) {
   state.serviceUrl = String(state.serviceUrl || "").replace(/\/+$/, "");
   state.pauseMinutes = Number(state.pauseMinutes) || 5;
   document.documentElement.style.setProperty("--nord", state.accentColor || "#4d8dff");
-  document.documentElement.style.setProperty("--panel-opacity", `${Math.max(65, Math.min(100, Number(state.backgroundOpacity) || 100))}%`);
+  document.documentElement.style.setProperty("--widget-background", state.backgroundColor || "#07111f");
+  const backgroundOpacity = Math.max(20, Math.min(100, Number(state.backgroundOpacity) || 100));
+  document.documentElement.style.setProperty("--background-opacity", `${backgroundOpacity / 100}`);
+  document.documentElement.style.setProperty("--panel-opacity", `${backgroundOpacity}%`);
   document.body.classList.toggle("density-compact", state.density === "compact");
   document.body.classList.toggle("hide-router", !state.showRouterIdentity);
   document.body.classList.toggle("hide-chart", !state.showThroughputChart);

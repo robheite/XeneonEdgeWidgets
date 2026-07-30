@@ -37,7 +37,7 @@ companion. No token needs to be copied into iCUE settings.
 - Companion service URL
 - Start companion with Windows
 - Pause duration
-- Accent color and background opacity
+- Accent color, background color, and background opacity
 - Comfortable or compact density
 - Speed unit (`MB/s` or `Mb/s`)
 - Show or hide WAN identity

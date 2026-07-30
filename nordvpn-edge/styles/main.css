@@ -8,6 +8,8 @@
   --secondary: #adc0d8;
   --muted: #7187a3;
   --nord: #4d8dff;
+  --widget-background: #07111f;
+  --background-opacity: 1;
   --panel-opacity: 100%;
   --nord-soft: rgba(77, 141, 255, 0.15);
   --safe: #48d6a0;
@@ -29,7 +31,7 @@ body {
 }
 
 body {
-  background: var(--night);
+  background: transparent;
   color: var(--text);
   font-family: "Bahnschrift", "Segoe UI Variable", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -40,6 +42,8 @@ button {
 }
 
 .dashboard {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 0.86fr 1.06fr 1.18fr;
   gap: 16px;
@@ -47,9 +51,19 @@ button {
   height: 100%;
   min-height: 0;
   padding: 24px;
+  background: transparent;
+}
+
+.dashboard::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
   background:
     radial-gradient(circle at 12% 20%, rgba(52, 104, 190, 0.16), transparent 30%),
-    var(--night);
+    var(--widget-background);
+  content: "";
+  opacity: var(--background-opacity);
+  pointer-events: none;
 }
 
 .connection-panel,
