@@ -28,13 +28,13 @@ network state.
 2. Follow [Edge Companion](../companion.md) and start the companion.
 3. Keep the default companion URL unless you intentionally changed its local
    configuration.
-4. Add an action token to both the companion configuration and widget settings
-   if action authorization is enabled.
+
+The widget automatically obtains its per-user action token from the local
+companion. No token needs to be copied into iCUE settings.
 
 ## Settings
 
 - Companion service URL
-- Action token
 - Start companion with Windows
 - Pause duration
 - Accent color and background opacity
@@ -56,3 +56,8 @@ reports `WAN unavailable`.
 The widget and companion do not require NordVPN account credentials. Public IP
 lookups reveal the requesting IP address to the configured lookup provider, as
 all public-IP services necessarily do.
+
+The companion generates a random action token in the current user's local
+application data. The iCUE widget retrieves it through the loopback API, and
+state-changing requests are rejected without the token. A manually configured
+`EDGE_COMPANION_TOKEN` remains available for advanced deployments.

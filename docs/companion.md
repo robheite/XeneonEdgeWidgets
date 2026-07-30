@@ -33,8 +33,24 @@ protocol registration, and remove its startup entry.
 
 - The HTTP service binds to loopback and is not exposed to the LAN.
 - Actions are fixed and validated; the API is not a general command runner.
-- An optional action token protects state-changing operations.
+- A random per-user action token protects every state-changing operation and is
+  bootstrapped automatically by installed widgets.
 - Router credentials and NordVPN account credentials are not stored.
+
+## Local state
+
+The companion stores its generated action token and an active NordVPN Pause
+deadline under:
+
+```text
+%LOCALAPPDATA%\XeneonEdgeWidgets\EdgeCompanion\
+```
+
+Pause resumes remain scheduled after a companion or Windows restart. If the
+saved deadline elapsed while the companion was offline, it requests a fastest
+United States connection when the companion next starts. Uninstalling the
+application leaves this small per-user state directory in place so an upgrade
+or reinstall does not silently lose an active Pause or rotate the action token.
 
 ## Development
 

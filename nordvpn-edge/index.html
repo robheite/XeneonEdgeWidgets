@@ -7,7 +7,6 @@
   <link rel="icon" href="resources/icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles/main.css" />
   <meta name="x-icue-property" content="serviceUrl" data-label="tr('Companion service URL')" data-type="textfield" data-default="'http://127.0.0.1:48620'" />
-  <meta name="x-icue-property" content="actionToken" data-label="tr('Action token')" data-type="textfield" data-default="''" />
   <meta name="x-icue-property" content="startWithWindows" data-label="tr('Start companion with Windows')" data-type="switch" data-default="false" />
   <meta name="x-icue-property" content="pauseMinutes" data-label="tr('Pause duration')" data-type="combobox" data-default="5" data-values="[{'key':5,'value':'5 min'},{'key':15,'value':'15 min'},{'key':30,'value':'30 min'},{'key':60,'value':'60 min'}]" />
   <meta name="x-icue-property" content="accentColor" data-label="tr('Accent color')" data-type="color" data-default="'#4d8dff'" />
@@ -20,7 +19,7 @@
   [
     {
       "title": "tr('NordVPN Edge')",
-      "properties": ["serviceUrl", "actionToken", "startWithWindows", "pauseMinutes"]
+      "properties": ["serviceUrl", "startWithWindows", "pauseMinutes"]
     },
     {
       "title": "tr('Appearance')",

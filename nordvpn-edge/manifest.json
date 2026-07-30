@@ -3,7 +3,7 @@
   "id": "com.robert.nordvpn-edge",
   "name": "nordvpn-edge",
   "description": "NordVPN status, network identity, throughput, and quick controls for XENEON EDGE.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "preview_icon": "resources/icon.svg",
   "min_app_version": "5.48",
   "min_framework_version": "1.0.0",

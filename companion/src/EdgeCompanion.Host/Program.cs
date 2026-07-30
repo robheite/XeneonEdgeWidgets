@@ -14,6 +14,7 @@ builder.Services.AddSingleton<PublicIpModule>();
 builder.Services.AddSingleton<RouterWanModule>();
 builder.Services.AddSingleton<NordVpnModule>();
 builder.Services.AddSingleton<StartupModule>();
+builder.Services.AddSingleton<ActionTokenProvider>();
 
 var app = builder.Build();
 app.Use(async (context, next) =>
@@ -63,6 +64,14 @@ api.MapGet("/capabilities", (NordVpnModule nordVpn, RouterWanModule routerWan, S
         new { id = "public-ip", available = true },
     }));
 
+api.MapGet("/auth/token", (HttpContext context, ActionTokenProvider tokenProvider) =>
+{
+    if (!OriginPolicy.IsAllowed(context.Request.Headers.Origin.ToString()))
+        return Results.Json(ApiEnvelope.Error("origin_not_allowed", "Token bootstrap requires an iCUE or localhost origin"), statusCode: 403);
+    context.Response.Headers.CacheControl = "no-store";
+    return Results.Ok(ApiEnvelope.From(new { token = tokenProvider.Token }));
+});
+
 api.MapGet("/nordvpn/dashboard", async (
     NordVpnModule nordVpn,
     PublicIpModule publicIp,
@@ -100,9 +109,9 @@ api.MapPost("/system/startup", (
     HttpContext context,
     StartupRequest request,
     StartupModule startup,
-    IConfiguration configuration) =>
+    ActionTokenProvider tokenProvider) =>
 {
-    if (!ActionAuthorization.IsAllowed(context.Request, configuration["EDGE_COMPANION_TOKEN"]))
+    if (!ActionAuthorization.IsAllowed(context.Request, tokenProvider.Token))
         return Results.Json(ApiEnvelope.Error("unauthorized", "Missing or invalid action token"), statusCode: 401);
     try
     {
@@ -118,9 +127,9 @@ api.MapPost("/nordvpn/actions/pause", async (
     HttpContext context,
     PauseRequest request,
     NordVpnModule nordVpn,
-    IConfiguration configuration) =>
+    ActionTokenProvider tokenProvider) =>
 {
-    if (!ActionAuthorization.IsAllowed(context.Request, configuration["EDGE_COMPANION_TOKEN"]))
+    if (!ActionAuthorization.IsAllowed(context.Request, tokenProvider.Token))
         return Results.Json(ApiEnvelope.Error("unauthorized", "Missing or invalid action token"), statusCode: 401);
 
     try
@@ -136,9 +145,9 @@ api.MapPost("/nordvpn/actions/pause", async (
 api.MapPost("/nordvpn/actions/connect-fastest-us", async (
     HttpContext context,
     NordVpnModule nordVpn,
-    IConfiguration configuration) =>
+    ActionTokenProvider tokenProvider) =>
 {
-    if (!ActionAuthorization.IsAllowed(context.Request, configuration["EDGE_COMPANION_TOKEN"]))
+    if (!ActionAuthorization.IsAllowed(context.Request, tokenProvider.Token))
         return Results.Json(ApiEnvelope.Error("unauthorized", "Missing or invalid action token"), statusCode: 401);
 
     try

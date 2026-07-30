@@ -17,16 +17,30 @@ public sealed record NordVpnStatus(
 public sealed record ActionResult(string Message, DateTimeOffset? PausedUntil = null);
 public sealed record NordVpnConnectionMetadata(string Server, string HostName, string? City, string? Country);
 
-public sealed class NordVpnModule(ILogger<NordVpnModule> logger)
+public sealed class NordVpnModule
 {
     private const string DefaultExecutable = @"C:\Program Files\NordVPN\NordVPN.exe";
     private static readonly string NordVpnDataDirectory =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NordVPN");
     private readonly SemaphoreSlim _actionLock = new(1, 1);
+    private readonly ILogger<NordVpnModule> _logger;
+    private readonly IPauseStateStore _pauseStateStore;
     private readonly string? _executable = File.Exists(DefaultExecutable) ? DefaultExecutable : null;
     private readonly NordVpnConnectionReader _connectionReader = new(NordVpnDataDirectory);
     private CancellationTokenSource? _resumeCancellation;
     private DateTimeOffset? _pausedUntil;
+
+    public NordVpnModule(ILogger<NordVpnModule> logger)
+        : this(logger, new PauseStateStore())
+    {
+    }
+
+    public NordVpnModule(ILogger<NordVpnModule> logger, IPauseStateStore pauseStateStore)
+    {
+        _logger = logger;
+        _pauseStateStore = pauseStateStore;
+        RestorePause();
+    }
 
     public object Capability() => new
     {
@@ -79,6 +93,7 @@ public sealed class NordVpnModule(ILogger<NordVpnModule> logger)
         {
             await RunAsync(["-d"], TimeSpan.FromSeconds(15));
             _pausedUntil = DateTimeOffset.UtcNow.AddMinutes(minutes);
+            _pauseStateStore.Write(new PauseState(_pausedUntil.Value));
             _resumeCancellation?.Cancel();
             _resumeCancellation?.Dispose();
             _resumeCancellation = new CancellationTokenSource();
@@ -95,7 +110,9 @@ public sealed class NordVpnModule(ILogger<NordVpnModule> logger)
     {
         try
         {
-            await Task.Delay(deadline - DateTimeOffset.UtcNow, cancellationToken);
+            var delay = deadline - DateTimeOffset.UtcNow;
+            if (delay > TimeSpan.Zero)
+                await Task.Delay(delay, cancellationToken);
             await ConnectFastestUsAsync();
         }
         catch (OperationCanceledException)
@@ -103,7 +120,7 @@ public sealed class NordVpnModule(ILogger<NordVpnModule> logger)
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Unable to resume NordVPN after pause");
+            _logger.LogError(exception, "Unable to resume NordVPN after pause");
         }
     }
 
@@ -155,9 +172,20 @@ public sealed class NordVpnModule(ILogger<NordVpnModule> logger)
     private void ClearPause()
     {
         _pausedUntil = null;
+        _pauseStateStore.Delete();
         _resumeCancellation?.Cancel();
         _resumeCancellation?.Dispose();
         _resumeCancellation = null;
+    }
+
+    private void RestorePause()
+    {
+        var saved = _pauseStateStore.Read();
+        if (saved is null) return;
+
+        _pausedUntil = saved.PausedUntil;
+        _resumeCancellation = new CancellationTokenSource();
+        _ = ResumeAfterPauseAsync(saved.PausedUntil, _resumeCancellation.Token);
     }
 }
 

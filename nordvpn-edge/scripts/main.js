@@ -1,6 +1,7 @@
 const state = {
   serviceUrl: "http://127.0.0.1:48620",
   actionToken: "",
+  tokenPromise: null,
   startWithWindows: false,
   pauseMinutes: 5,
   accentColor: "#4d8dff",
@@ -51,6 +52,8 @@ function applySettings(settings = {}, allowStartupChange = false) {
     && settingsInitialized
     && requestedStartup !== previousStartWithWindows;
   Object.assign(state, settings);
+  state.actionToken = "";
+  state.tokenPromise = null;
   state.startWithWindows = requestedStartup;
   previousStartWithWindows = requestedStartup;
   settingsInitialized = true;
@@ -74,6 +77,28 @@ function restartPolling() {
   clearInterval(state.timer);
   refreshStatus();
   state.timer = setInterval(refreshStatus, 2000);
+}
+
+async function ensureActionToken() {
+  if (state.actionToken) return state.actionToken;
+  if (!state.tokenPromise) {
+    state.tokenPromise = fetch(`${state.serviceUrl}/api/v1/auth/token`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(4500),
+    })
+      .then(async (response) => {
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.data?.token) {
+          throw new Error(result.errors?.[0]?.message || "Unable to authorize widget actions");
+        }
+        state.actionToken = result.data.token;
+        return state.actionToken;
+      })
+      .finally(() => {
+        state.tokenPromise = null;
+      });
+  }
+  return state.tokenPromise;
 }
 
 async function refreshStatus() {
@@ -210,11 +235,12 @@ async function sendAction(path, body) {
   elements["pause-button"].disabled = true;
   elements["fastest-button"].disabled = true;
   try {
+    const actionToken = await ensureActionToken();
     const response = await fetch(`${state.serviceUrl}/api${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(state.actionToken ? { "X-Edge-Token": state.actionToken } : {}),
+        "X-Edge-Token": actionToken,
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(12000),
@@ -236,11 +262,12 @@ async function configureStartup(enabled) {
     ? "Enabling Windows startup…"
     : "Disabling Windows startup…";
   try {
+    const actionToken = await ensureActionToken();
     const response = await fetch(`${state.serviceUrl}/api/v1/system/startup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(state.actionToken ? { "X-Edge-Token": state.actionToken } : {}),
+        "X-Edge-Token": actionToken,
       },
       body: JSON.stringify({ enabled }),
       signal: AbortSignal.timeout(5000),

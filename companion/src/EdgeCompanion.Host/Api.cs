@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace EdgeCompanion.Host;
 
 public static class ProcessInfo
@@ -48,8 +51,16 @@ public static class OriginPolicy
 public static class ActionAuthorization
 {
     public static bool IsAllowed(HttpRequest request, string? expectedToken) =>
-        string.IsNullOrEmpty(expectedToken)
-        || request.Headers["X-Edge-Token"].ToString() == expectedToken;
+        !string.IsNullOrEmpty(expectedToken)
+        && FixedTimeEquals(request.Headers["X-Edge-Token"].ToString(), expectedToken);
+
+    private static bool FixedTimeEquals(string suppliedToken, string expectedToken)
+    {
+        var supplied = Encoding.UTF8.GetBytes(suppliedToken);
+        var expected = Encoding.UTF8.GetBytes(expectedToken);
+        return supplied.Length == expected.Length
+            && CryptographicOperations.FixedTimeEquals(supplied, expected);
+    }
 }
 
 public sealed class ModuleException(string code, string message, int statusCode = 503) : Exception(message)
