@@ -3,6 +3,7 @@
   "NordVPN Edge": "NordVPN Edge",
   "Companion service URL": "Companion service URL",
   "Action token": "Action token",
+  "Start companion with Windows": "Start companion with Windows",
   "Pause duration": "Pause duration",
   "Appearance": "Appearance",
   "Accent color": "Accent color",
@@ -11,6 +12,6 @@
   "Comfortable": "Comfortable",
   "Compact": "Compact",
   "Speed unit": "Speed unit",
-  "Show router identity": "Show router identity",
+  "Show WAN identity": "Show WAN identity",
   "Show throughput chart": "Show throughput chart"
 }

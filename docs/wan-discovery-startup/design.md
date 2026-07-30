@@ -1,6 +1,6 @@
 # Shared Companion WAN Discovery and Startup
 
-**Status:** Draft
+**Status:** Approved
 
 **Author:** Codex  **Date:** 2026-07-30
 
@@ -193,7 +193,11 @@ provider, and leaves other companion modules and widgets intact.
 
 ## Open questions
 
-- Should the first public installer default companion startup to enabled while
-  keeping the widget switch default off?
+- None for this phase. The widget setting defaults to off; installer defaults
+  will be decided during installer implementation.
 
 ## Decision
+
+Approved by the user on 2026-07-30. Implement read-only UPnP IGD first,
+NAT-PMP second, and an explicit unavailable result with no external probe.
+Expose current-user Windows startup as an opt-in widget setting.

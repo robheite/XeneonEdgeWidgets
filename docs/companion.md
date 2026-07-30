@@ -19,9 +19,10 @@ module create no work for that module.
 The companion build is self-contained for Windows x64; users do not need to
 install the .NET runtime separately.
 
-Automatic startup and the final installer/protocol registration are still under
-development. Until that feature is released, launch the executable manually
-before using a companion-enabled widget.
+After extracting the release to a stable folder, companion-enabled widgets can
+enable or disable current-user Windows startup from their settings. Final
+installer and protocol registration are still under development; until those
+ship, launch the executable manually the first time.
 
 ## Security
 

@@ -35,6 +35,7 @@ network state.
 
 - Companion service URL
 - Action token
+- Start companion with Windows
 - Pause duration
 - Accent color and background opacity
 - Comfortable or compact density
@@ -46,9 +47,9 @@ network state.
 
 The VPN exit IP can be observed through a public IP service. The WAN address
 cannot be inferred through the same request because it follows the VPN route.
-The planned router-neutral resolver will use read-only UPnP IGD and fall back to
-NAT-PMP. When neither protocol is available, the widget reports
-`WAN unavailable`.
+The router-neutral resolver uses read-only UPnP IGD and falls back to NAT-PMP.
+It never creates a port mapping. When neither protocol is available, the widget
+reports `WAN unavailable`.
 
 ## Privacy
 

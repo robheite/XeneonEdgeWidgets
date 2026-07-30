@@ -9,6 +9,7 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<System
 builder.Services.AddSingleton<PublicIpModule>();
 builder.Services.AddSingleton<RouterWanModule>();
 builder.Services.AddSingleton<NordVpnModule>();
+builder.Services.AddSingleton<StartupModule>();
 
 var app = builder.Build();
 app.Use(async (context, next) =>
@@ -48,11 +49,12 @@ api.MapGet("/health", () => ApiEnvelope.From(new
     uptimeSeconds = (long)(DateTimeOffset.UtcNow - ProcessInfo.StartedAt).TotalSeconds,
 }));
 
-api.MapGet("/capabilities", (NordVpnModule nordVpn, RouterWanModule routerWan) =>
+api.MapGet("/capabilities", (NordVpnModule nordVpn, RouterWanModule routerWan, StartupModule startup) =>
     ApiEnvelope.From(new object[]
     {
         nordVpn.Capability(),
         routerWan.Capability(),
+        new { id = "windows-startup", available = startup.Get().Supported },
         new { id = "system-network", available = true },
         new { id = "public-ip", available = true },
     }));
@@ -81,9 +83,31 @@ api.MapGet("/nordvpn/dashboard", async (
             machineLocation = machineIp.Value is null ? machineIp.Error?.Message : $"Observed by {machineIp.Value.Source}",
             routerWanIp = router.Value?.Ip,
             routerSource = router.Value?.Source,
+            routerStatus = router.Value?.Status ?? "unavailable",
         },
         throughput = network.Snapshot,
     }, new[] { vpn.Error, machineIp.Error, router.Error }.Where(error => error is not null));
+});
+
+api.MapGet("/system/startup", (StartupModule startup) =>
+    ApiEnvelope.From(startup.Get()));
+
+api.MapPost("/system/startup", (
+    HttpContext context,
+    StartupRequest request,
+    StartupModule startup,
+    IConfiguration configuration) =>
+{
+    if (!ActionAuthorization.IsAllowed(context.Request, configuration["EDGE_COMPANION_TOKEN"]))
+        return Results.Json(ApiEnvelope.Error("unauthorized", "Missing or invalid action token"), statusCode: 401);
+    try
+    {
+        return Results.Ok(ApiEnvelope.From(startup.Set(request.Enabled)));
+    }
+    catch (ModuleException exception)
+    {
+        return Results.Json(ApiEnvelope.Error(exception.Code, exception.Message), statusCode: exception.StatusCode);
+    }
 });
 
 api.MapPost("/nordvpn/actions/pause", async (

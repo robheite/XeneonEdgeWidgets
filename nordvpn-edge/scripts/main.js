@@ -1,6 +1,7 @@
 const state = {
   serviceUrl: "http://127.0.0.1:48620",
   actionToken: "",
+  startWithWindows: false,
   pauseMinutes: 5,
   accentColor: "#4d8dff",
   backgroundOpacity: 100,
@@ -9,6 +10,7 @@ const state = {
   showRouterIdentity: true,
   showThroughputChart: true,
   polling: false,
+  startupBusy: false,
   timer: null,
   history: {
     download: Array(30).fill(0),
@@ -18,6 +20,8 @@ const state = {
 
 const elements = {};
 let layoutObserver;
+let settingsInitialized = false;
+let previousStartWithWindows = false;
 
 function updateLayoutMode() {
   const preview = typeof iCUE !== "undefined" && Boolean(iCUE.isPreview);
@@ -39,8 +43,17 @@ function cacheElements() {
   });
 }
 
-function applySettings(settings = {}) {
+function applySettings(settings = {}, allowStartupChange = false) {
+  const requestedStartup = Object.prototype.hasOwnProperty.call(settings, "startWithWindows")
+    ? Boolean(settings.startWithWindows)
+    : Boolean(state.startWithWindows);
+  const configureStartupNow = allowStartupChange
+    && settingsInitialized
+    && requestedStartup !== previousStartWithWindows;
   Object.assign(state, settings);
+  state.startWithWindows = requestedStartup;
+  previousStartWithWindows = requestedStartup;
+  settingsInitialized = true;
   state.serviceUrl = String(state.serviceUrl || "").replace(/\/+$/, "");
   state.pauseMinutes = Number(state.pauseMinutes) || 5;
   document.documentElement.style.setProperty("--nord", state.accentColor || "#4d8dff");
@@ -53,6 +66,7 @@ function applySettings(settings = {}) {
     elements["speed-unit"].textContent = state.speedUnit === "Mbps" ? "Mb/s" : "MB/s";
   }
   restartPolling();
+  if (configureStartupNow) configureStartup(requestedStartup);
 }
 
 function restartPolling() {
@@ -68,7 +82,7 @@ async function refreshStatus() {
   try {
     const response = await fetch(`${state.serviceUrl}/api/v1/nordvpn/dashboard`, {
       cache: "no-store",
-      signal: AbortSignal.timeout(1600),
+      signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) throw new Error(`Companion returned ${response.status}`);
     const payload = await response.json();
@@ -103,7 +117,7 @@ function renderStatus(data) {
   elements["machine-ip"].textContent = data.network?.machinePublicIp || "—";
   elements["machine-location"].textContent = data.network?.machineLocation || "Public IP unavailable";
   elements["router-ip"].textContent = data.network?.routerWanIp || "—";
-  elements["router-source"].textContent = data.network?.routerSource || "Probe not configured";
+  elements["router-source"].textContent = data.network?.routerSource || "WAN unavailable";
 
   const verified = Boolean(data.network?.routerWanIp && data.network?.machinePublicIp);
   const separated = verified && data.network.routerWanIp !== data.network.machinePublicIp;
@@ -112,8 +126,8 @@ function renderStatus(data) {
   elements["identity-note"].textContent = separated
     ? "The PC exits through a different public IP than the WAN."
     : verified
-      ? "The PC and router report the same public IP; VPN protection is not confirmed by IP."
-      : "Router IP requires a non-VPN probe or supported router API.";
+      ? "The PC and WAN report the same public IP; VPN protection is not confirmed by IP."
+      : "WAN unavailable through UPnP IGD or NAT-PMP.";
 
   const speedMultiplier = state.speedUnit === "Mbps" ? 8 : 1;
   const download = normalizeSpeed(data.throughput?.downloadMBps) * speedMultiplier;
@@ -212,6 +226,34 @@ async function sendAction(path, body) {
   } catch (error) {
     elements["action-message"].textContent = error.message;
     refreshStatus();
+  }
+}
+
+async function configureStartup(enabled) {
+  if (state.startupBusy) return;
+  state.startupBusy = true;
+  elements["action-message"].textContent = enabled
+    ? "Enabling Windows startup…"
+    : "Disabling Windows startup…";
+  try {
+    const response = await fetch(`${state.serviceUrl}/api/v1/system/startup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(state.actionToken ? { "X-Edge-Token": state.actionToken } : {}),
+      },
+      body: JSON.stringify({ enabled }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.errors?.[0]?.message || `Startup setting failed (${response.status})`);
+    elements["action-message"].textContent = result.data?.enabled
+      ? "Companion will start with Windows"
+      : "Windows startup disabled";
+  } catch (error) {
+    elements["action-message"].textContent = error.message || "Unable to update Windows startup";
+  } finally {
+    state.startupBusy = false;
   }
 }
 
