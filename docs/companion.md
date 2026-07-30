@@ -12,17 +12,22 @@ module create no work for that module.
 
 1. Download `edge-companion-win-x64-<version>.zip` from
    [GitHub Releases](https://github.com/robheite/XeneonEdgeWidgets/releases).
-2. Extract it to a stable folder owned by your Windows account.
-3. Run `EdgeCompanion.Host.exe`.
+2. Extract the ZIP and run `EdgeCompanion-Setup-<version>.exe`.
+3. Complete the per-user installer. Administrator access is not required.
 4. Leave the widget's companion URL set to `http://127.0.0.1:48620`.
 
 The companion build is self-contained for Windows x64; users do not need to
-install the .NET runtime separately.
+install the .NET runtime separately. The initial public installer is not
+code-signed, so Windows may display a SmartScreen warning.
 
-After extracting the release to a stable folder, companion-enabled widgets can
-enable or disable current-user Windows startup from their settings. Final
-installer and protocol registration are still under development; until those
-ship, launch the executable manually the first time.
+The installer registers the private `edgecompanion://` Windows protocol.
+Companion-enabled widgets use it only to launch the installed companion when it
+is offline. The protocol does not accept commands or arbitrary arguments.
+
+Widgets can enable or disable current-user Windows startup from their settings.
+Startup remains disabled unless the user enables it. Uninstall **Edge
+Companion** from Windows **Installed apps** to stop the companion, remove the
+protocol registration, and remove its startup entry.
 
 ## Security
 
@@ -44,6 +49,19 @@ Run its test suite:
 ```powershell
 npm run companion:test
 ```
+
+Build the installer after publishing a Windows x64 companion:
+
+```powershell
+.\scripts\build-companion-installer.ps1 `
+  -PublishDirectory .\artifacts\companion `
+  -Version 1.0.0 `
+  -OutputDirectory .\installer\output
+```
+
+This requires Inno Setup 6. The public release workflow installs the pinned
+compiler and tests install, in-place upgrade, launch, stop, and uninstall before
+creating a release.
 
 The module architecture and API decisions are documented in
 [Reusable iCUE Widget Companion](widget-companion/design.md).

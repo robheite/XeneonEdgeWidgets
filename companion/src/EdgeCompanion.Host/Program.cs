@@ -1,7 +1,11 @@
 using EdgeCompanion.Host;
 using EdgeCompanion.Host.Modules;
 
-var builder = WebApplication.CreateBuilder(args);
+if (await CompanionProcessControl.HandleLaunchCommandAsync(args))
+    return;
+
+var effectiveArgs = CompanionProcessControl.IsStartCommand(args) ? Array.Empty<string>() : args;
+var builder = WebApplication.CreateBuilder(effectiveArgs);
 builder.WebHost.UseUrls(builder.Configuration["EDGE_COMPANION_URL"] ?? "http://127.0.0.1:48620");
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SystemNetworkModule>();
@@ -147,6 +151,24 @@ api.MapPost("/nordvpn/actions/connect-fastest-us", async (
     }
 });
 
-app.Run();
+using var shutdownEvent = new EventWaitHandle(
+    initialState: false,
+    EventResetMode.AutoReset,
+    CompanionProcessControl.ShutdownEventName);
+var shutdownRegistration = ThreadPool.RegisterWaitForSingleObject(
+    shutdownEvent,
+    (_, _) => app.Lifetime.StopApplication(),
+    state: null,
+    millisecondsTimeOutInterval: Timeout.Infinite,
+    executeOnlyOnce: true);
+
+try
+{
+    app.Run();
+}
+finally
+{
+    shutdownRegistration.Unregister(null);
+}
 
 public partial class Program;

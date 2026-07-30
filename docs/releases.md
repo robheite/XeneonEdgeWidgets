@@ -40,7 +40,9 @@ Every release contains:
   - contains raw `.icuewidget` packages at the archive root;
   - includes every top-level folder with a valid widget `manifest.json`.
 - `edge-companion-win-x64-<version>.zip`
-  - contains a self-contained .NET Windows x64 publish;
+  - contains the per-user `EdgeCompanion-Setup-<version>.exe` installer and a
+    short README;
+  - installs a self-contained .NET Windows x64 application;
   - does not require a separate .NET runtime installation.
 
 GitHub-generated release notes describe commits since the previous release.
@@ -50,5 +52,6 @@ README and documentation.
 ## Failure behavior
 
 No release is created if documentation verification, widget validation,
-companion tests, packaging, or publishing fails. An existing release tag is
-never replaced by the workflow.
+companion tests, packaging, installer compilation, or the installer
+install/upgrade/uninstall smoke test fails. An existing release tag is never
+replaced by the workflow.

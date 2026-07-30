@@ -100,11 +100,32 @@ jobs:
             --self-contained true `
             --output $publishOutput `
             -p:Version=$version `
+            -p:OutputType=WinExe `
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build and test companion installer
+        shell: pwsh
+        run: |
+          choco install innosetup --version=6.7.1 --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $version = '${{ inputs.tag }}'.TrimStart('v')
+          $publishOutput = Join-Path $env:RUNNER_TEMP 'edge-companion'
+          $installerOutput = Join-Path $env:RUNNER_TEMP 'edge-companion-installer'
+          $installer = & ./scripts/build-companion-installer.ps1 `
+            -PublishDirectory $publishOutput `
+            -Version $version `
+            -OutputDirectory $installerOutput
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          & ./scripts/test-companion-installer.ps1 -InstallerPath $installer
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          Copy-Item -LiteralPath installer/README.txt -Destination $installerOutput
           $archive = Join-Path $env:GITHUB_WORKSPACE "edge-companion-win-x64-${{ inputs.tag }}.zip"
-          Compress-Archive -Path (Join-Path $publishOutput '*') -DestinationPath $archive
+          Compress-Archive -Path (Join-Path $installerOutput '*') -DestinationPath $archive
 
       - name: Create GitHub release
         shell: pwsh

@@ -33,6 +33,26 @@ public class ApiTests
         Assert.Equal("offline", result.Error?.Message);
     }
 
+    [Theory]
+    [InlineData("--start", true)]
+    [InlineData("--START", true)]
+    [InlineData("--stop", false)]
+    [InlineData("", false)]
+    public void Companion_recognizes_only_the_exact_start_command(string argument, bool expected)
+    {
+        Assert.Equal(expected, CompanionProcessControl.IsStartCommand([argument]));
+    }
+
+    [Theory]
+    [InlineData("--stop", true)]
+    [InlineData("--STOP", true)]
+    [InlineData("--start", false)]
+    [InlineData("", false)]
+    public void Companion_recognizes_only_the_exact_stop_command(string argument, bool expected)
+    {
+        Assert.Equal(expected, CompanionProcessControl.IsStopCommand([argument]));
+    }
+
     [Fact]
     public void Nordvpn_connection_reader_uses_latest_status_and_catalog_location()
     {

@@ -11,7 +11,7 @@ Each release contains two separate archives:
 
 - `xeneon-edge-widgets-<version>.zip` contains the raw `.icuewidget` files.
 - `edge-companion-win-x64-<version>.zip` contains the self-contained Windows
-  companion application.
+  companion installer.
 
 The companion is only required by widgets that need access to Windows,
 applications, or network protocols unavailable inside iCUE's HTML runtime.
@@ -48,6 +48,7 @@ Requirements:
 
 - Node.js 24.x
 - .NET 8 SDK
+- Inno Setup 6 (only when building the companion installer locally)
 - iCUE 5.48 or later
 
 Install the locked Node tooling:
@@ -84,7 +85,7 @@ The workflow:
 1. verifies that every widget has a documentation page;
 2. validates and packages every widget folder;
 3. runs the companion test suite;
-4. publishes a self-contained Windows x64 companion;
+4. builds and smoke-tests the per-user Windows x64 companion installer;
 5. creates the two release ZIP files; and
 6. creates the tag and GitHub Release.
 
