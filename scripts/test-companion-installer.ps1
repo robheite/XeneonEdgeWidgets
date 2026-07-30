@@ -67,6 +67,7 @@ try {
     Start-Process -FilePath $executable -ArgumentList '--start' -WindowStyle Hidden
     Wait-ForHealth $true
 
+    New-Item -Path $startupKey -Force | Out-Null
     New-ItemProperty -Path $startupKey -Name 'EdgeCompanion' -Value "`"$executable`" --start" -PropertyType String -Force | Out-Null
 
     & $executable --stop
