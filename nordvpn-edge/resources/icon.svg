@@ -1,10 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="nordvpn-edge">
-  <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop stop-color="#59c2ff"/>
-      <stop offset="1" stop-color="#7c3aed"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="28" fill="#111827"/>
-  <path d="M29 84h70M34 64h60M43 44h42" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="NordVPN Edge">
+  <path fill="#fff" fill-rule="evenodd" d="M64 8c21 0 39 8.4 50 18.8v31.7c0 29.4-20.2 51.2-50 61.5-29.8-10.3-50-32.1-50-61.5V26.8C25 16.4 43 8 64 8Zm0 12c-15.7 0-29.8 5.5-38 12.4v26.1c0 22.5 14.6 40.1 38 48.7 23.4-8.6 38-26.2 38-48.7V32.4C93.8 25.5 79.7 20 64 20Z"/>
+  <path fill="#fff" fill-rule="evenodd" d="m31 82 19.5-35L64 65l14.5-26L99 82H31Zm19.5-35 7.1 9.5-4.3-1.6-4.6 3.8-4.4-1.2L50.5 47Zm28-8 8.8 15.4-5.4-3-5 4-5.3-3.5L78.5 39Z"/>
 </svg>

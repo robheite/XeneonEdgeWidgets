@@ -1,0 +1,21 @@
+{
+  "author": "Robert",
+  "id": "com.robert.notes-edge",
+  "name": "notes-edge",
+  "description": "Self-contained persistent notes lists for XENEON EDGE.",
+  "version": "1.1.3",
+  "preview_icon": "resources/icon.svg",
+  "min_app_version": "5.48",
+  "min_framework_version": "1.0.0",
+  "os": [
+    {
+      "platform": "windows"
+    }
+  ],
+  "supported_devices": [
+    {
+      "type": "dashboard_lcd"
+    }
+  ],
+  "interactive": true
+}

@@ -22,6 +22,15 @@ primary target.
   depend on a globally installed CLI.
 - Validate every widget with `npm run widget:validate -- <widget-directory>`.
 - Package with `npm run widget:package -- <widget-directory>`.
+- Keep exactly one generated package per widget at the repository root, using
+  the CLI's unversioned `<widget-name>.icuewidget` filename. Do not create
+  additional version-numbered package copies unless explicitly requested.
+- Give every widget a distinctive, purpose-designed icon rather than a solid
+  square or placeholder. iCUE renders selector icons as monochrome masks, so
+  do not rely on color, gradients, shadows, or overlapping colors for meaning.
+  Prefer a transparent SVG whose alpha silhouette and negative space remain
+  recognizable as a single-color glyph at iCUE selector size, and set it as
+  the manifest's `preview_icon`.
 - Keep each widget self-contained. If it uses iCUE common tools or wrappers,
   copy the required files into that widget's own `common/` directory before
   packaging.

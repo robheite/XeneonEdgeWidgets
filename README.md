@@ -26,6 +26,7 @@ See [Installing widgets](docs/installing-widgets.md) and
 | Widget | Companion required | Documentation |
 | --- | --- | --- |
 | NordVPN Edge | Yes | [Features and setup](docs/widgets/nordvpn-edge.md) |
+| Notes Edge | No | [Features and setup](docs/widgets/notes-edge.md) |
 
 ## Repository structure
 
@@ -34,6 +35,7 @@ This is a main-branch monorepo:
 ```text
 companion/        Shared modular .NET companion
 nordvpn-edge/     Self-contained NordVPN widget
+notes-edge/       Self-contained persistent notes widget
 docs/widgets/     User documentation for each widget
 scripts/          Development and release checks
 ```
@@ -62,6 +64,8 @@ Validate and package a widget:
 ```powershell
 npm run widget:validate -- nordvpn-edge
 npm run widget:package -- nordvpn-edge
+npm run widget:validate -- notes-edge
+npm run widget:package -- notes-edge
 ```
 
 Run companion tests and start it locally:

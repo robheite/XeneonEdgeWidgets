@@ -296,6 +296,7 @@ h1 {
 }
 
 .route-node {
+  container-type: inline-size;
   display: grid;
   min-height: 174px;
   padding: 26px;
@@ -318,10 +319,10 @@ h1 {
   align-self: center;
   overflow: hidden;
   font-family: "Cascadia Mono", "Consolas", monospace;
-  font-size: 30px;
+  font-size: clamp(12px, 11cqi, 30px);
   font-weight: 600;
   letter-spacing: -0.04em;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 
@@ -488,10 +489,6 @@ h1 {
   .route-node {
     min-height: 164px;
     padding: 18px;
-  }
-
-  .route-node strong {
-    font-size: 20px;
   }
 
   .route-link {

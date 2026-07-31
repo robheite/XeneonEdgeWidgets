@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notes</title>
+  <link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <meta name="x-icue-property" content="listName" data-label="tr('List name')" data-type="textfield" data-default="'Notes'" />
+  <meta name="x-icue-property" content="showListName" data-label="tr('Show list name')" data-type="switch" data-default="true" />
+  <script type="application/json" id="x-icue-groups">
+    [
+      {"title":"tr('List')","properties":["listName","showListName"]}
+    ]
+  </script>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="title-wrap">
+        <h1 id="list-title">Notes</h1>
+        <span id="file-label" class="file-label"></span>
+      </div>
+      <div class="top-actions">
+        <button id="archive-toggle" class="text-button" type="button" aria-pressed="false">
+          <span class="archive-icon" aria-hidden="true">▣</span><span>Archived</span>
+        </button>
+        <button id="options-button" class="icon-button" type="button" aria-label="List options" title="List options">⋯</button>
+      </div>
+    </header>
+
+    <form id="add-form" class="composer">
+      <input id="new-note" type="text" maxlength="500" autocomplete="off" placeholder="Add New Item" aria-label="Add new item" />
+      <button class="add-button" type="submit" aria-label="Add note" title="Add note">+</button>
+      <button id="delete-selected" class="icon-button danger" type="button" aria-label="Delete checked items" title="Delete checked items" disabled>
+        <svg class="button-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5"/></svg>
+      </button>
+    </form>
+    <div id="archive-toolbar" class="archive-toolbar" hidden>
+      <span>Archived notes stay here until permanently cleared.</span>
+      <button id="clear-archive" class="clear-button" type="button">
+        <svg class="button-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5"/></svg>
+        <span>Clear archive</span>
+      </button>
+    </div>
+
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <section id="notes-list" class="notes-list" aria-label="Notes"></section>
+    <div id="empty-state" class="empty-state" hidden>
+      <span class="empty-mark" aria-hidden="true">✓</span>
+      <p id="empty-copy">Nothing on this list yet.</p>
+    </div>
+  </main>
+
+  <dialog id="edit-dialog" class="dialog">
+    <form id="edit-form" method="dialog">
+      <div class="dialog-heading">
+        <div><span class="eyebrow">NOTE</span><h2>Edit item</h2></div>
+        <button class="icon-button" type="button" data-close="edit-dialog" aria-label="Close">×</button>
+      </div>
+      <label class="field-label" for="edit-text">Item</label>
+      <textarea id="edit-text" maxlength="500" required></textarea>
+      <label class="toggle-row">
+        <input id="due-toggle" type="checkbox" />
+        <span class="switch-track" aria-hidden="true"></span>
+        <span>Add a due date</span>
+      </label>
+      <div id="due-fields" class="due-fields" hidden>
+        <label class="field-label" for="due-date">Enter Due Date/Time</label>
+        <div class="date-row">
+          <input id="due-date" type="date" />
+          <input id="due-time" type="time" aria-label="Due time (optional)" />
+        </div>
+        <span class="field-hint">Time is optional.</span>
+      </div>
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" data-close="edit-dialog">Cancel</button>
+        <button class="primary-button" type="submit">Save changes</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="options-dialog" class="dialog compact">
+    <form id="options-form" method="dialog">
+      <div class="dialog-heading">
+        <div><span class="eyebrow">STORAGE</span><h2>Choose a list</h2></div>
+        <button class="icon-button" type="button" data-close="options-dialog" aria-label="Close">×</button>
+      </div>
+      <label class="field-label" for="list-file">Stored list</label>
+      <select id="list-file"></select>
+      <p class="field-hint">Lists are saved inside the widget and remain available when a page widget is removed or replaced.</p>
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" data-close="options-dialog">Cancel</button>
+        <button class="primary-button" type="submit">Use list</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="clear-dialog" class="dialog compact">
+    <form id="clear-form" method="dialog">
+      <div class="dialog-heading">
+        <div><span class="eyebrow danger-text">PERMANENT ACTION</span><h2>Clear archived notes?</h2></div>
+        <button class="icon-button" type="button" data-close="clear-dialog" aria-label="Close">×</button>
+      </div>
+      <p class="dialog-copy">Every archived note in this list will be permanently deleted. This cannot be undone.</p>
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" data-close="clear-dialog">Cancel</button>
+        <button class="destructive-button" type="submit">Permanently clear archive</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="scripts/main.js"></script>
+  <script>
+    icueEvents = {
+      onICUEInitialized: function () { window.notesWidget.updateSettings(); },
+      onDataUpdated: function () { window.notesWidget.updateSettings(); }
+    };
+    if (typeof iCUE_initialized !== "undefined" && iCUE_initialized) window.notesWidget.updateSettings();
+  </script>
+</body>
+</html>
