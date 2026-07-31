@@ -37,3 +37,9 @@ primary target.
 - Do not commit generated `.icuewidget` packages unless explicitly requested.
 - Preserve the documented iCUE initialization and `onDataUpdated` lifecycle,
   and design for the XENEON EDGE `1688 × 696` landscape canvas.
+- Treat iCUE's editor/configuration view as a scaled preview, not a smaller
+  device canvas. Use `iCUE.isPreview` to fit the complete logical `1688 × 696`
+  composition into the available preview viewport with one aspect-preserving
+  scale, centered letterboxing, and no layout changes. Verify that the preview
+  shows the whole widget without zooming, cropping, stretching, or changing
+  the hardware layout. Apply this check to every future widget.

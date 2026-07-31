@@ -8,6 +8,7 @@
     document: { listName: "Notes", notes: [] },
     showArchived: false,
     editingId: null,
+    deletingListId: null,
     selected: new Set()
   };
   const el = {};
@@ -19,6 +20,16 @@
       const value = Function(`return typeof ${name} !== "undefined" ? ${name} : undefined`)();
       return value === undefined ? fallback : value;
     } catch { return fallback; }
+  }
+
+  function applyPreviewMode() {
+    const preview = typeof iCUE !== "undefined" && Boolean(iCUE.isPreview);
+    document.body.classList.toggle("preview-mode", preview);
+    if (!preview) return;
+    const scale = Math.min(window.innerWidth / 1688, window.innerHeight / 696);
+    document.documentElement.style.setProperty("--preview-scale", String(scale));
+    document.documentElement.style.setProperty("--preview-offset-x", `${(window.innerWidth - (1688 * scale)) / 2}px`);
+    document.documentElement.style.setProperty("--preview-offset-y", `${(window.innerHeight - (696 * scale)) / 2}px`);
   }
 
   function associationKey() {
@@ -113,9 +124,10 @@
   }
 
   async function mutateCurrentList(mutation) {
+    const targetListId = state.listId;
     const run = async () => {
       const latest = readStore();
-      const list = latest.lists.find(candidate => candidate.id === state.listId);
+      const list = latest.lists.find(candidate => candidate.id === targetListId);
       if (!list) throw new Error("The selected list no longer exists.");
       mutation(list);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(latest));
@@ -337,7 +349,96 @@
         option.selected = list.id === state.listId;
         el.listFile.add(option);
       });
+    updateDeleteListButton();
     el.optionsDialog.showModal();
+  }
+
+  function updateDeleteListButton() {
+    el.deleteList.disabled = !el.listFile.value;
+  }
+
+  function openDeleteListDialog() {
+    state.store = readStore();
+    const selected = state.store.lists.find(list => list.id === el.listFile.value);
+    if (!selected) return;
+    state.deletingListId = selected.id;
+    const noteCount = selected.notes.length;
+    const configuredCopy = selected.listName === state.listName
+      ? " Because this name is configured for the widget, it will be recreated as an empty list."
+      : "";
+    el.deleteListTitle.textContent = `Delete “${selected.listName}”?`;
+    el.deleteListCopy.textContent =
+      `This will permanently delete ${noteCount} ${noteCount === 1 ? "note" : "notes"}, including archived notes.${configuredCopy} This cannot be undone.`;
+    el.deleteListDialog.showModal();
+  }
+
+  async function deleteSelectedList(event) {
+    event.preventDefault();
+    const run = async () => {
+      const latest = readStore();
+      const selected = latest.lists.find(list => list.id === state.deletingListId);
+      if (!selected) throw new Error("The selected list no longer exists.");
+      latest.lists = latest.lists.filter(list => list.id !== selected.id);
+      let fallbackId = null;
+      let recreated = false;
+      if (selected.id === state.listId) {
+        let fallback = latest.lists.find(list =>
+          list.listName.localeCompare(state.listName, undefined, { sensitivity: "accent" }) === 0);
+        if (!fallback) {
+          fallback = { id: createId(), listName: state.listName, notes: [] };
+          latest.lists.push(fallback);
+          recreated = selected.listName === state.listName;
+        }
+        fallbackId = fallback.id;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(latest));
+      return { latest, selected, fallbackId, recreated };
+    };
+    try {
+      const result = navigator.locks?.request
+        ? await navigator.locks.request(STORAGE_KEY, run)
+        : await run();
+      state.store = result.latest;
+      el.deleteListDialog.close();
+      el.optionsDialog.close();
+
+      if (result.selected.id === state.listId) {
+        localStorage.removeItem(associationKey());
+        const configured = state.store.lists.find(list => list.id === result.fallbackId);
+        useList(
+          configured,
+          result.recreated
+            ? `Deleted “${result.selected.listName}” and recreated it as an empty configured list.`
+            : `Deleted “${result.selected.listName}” and returned to “${configured.listName}”.`
+        );
+      } else {
+        message(`Deleted “${result.selected.listName}” and all of its notes.`);
+        render();
+      }
+      state.deletingListId = null;
+    } catch (error) {
+      message(`Could not delete the list: ${error.message}`, true);
+    }
+  }
+
+  async function recoverAfterExternalDeletion() {
+    const run = async () => {
+      const latest = readStore();
+      let configured = latest.lists.find(list =>
+        list.listName.localeCompare(state.listName, undefined, { sensitivity: "accent" }) === 0);
+      if (!configured) {
+        configured = { id: createId(), listName: state.listName, notes: [] };
+        latest.lists.push(configured);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(latest));
+      }
+      return { latest, configured };
+    };
+    const result = navigator.locks?.request
+      ? await navigator.locks.request(STORAGE_KEY, run)
+      : await run();
+    state.store = result.latest;
+    localStorage.removeItem(associationKey());
+    useList(result.configured, "The previously selected list was deleted. Returned to the configured list.");
   }
 
   function saveOptions(event) {
@@ -360,6 +461,7 @@
   }
 
   function updateSettings() {
+    applyPreviewMode();
     const previousName = state.listName;
     state.listName = normalizeName(property("listName", defaults.listName));
     state.showListName = Boolean(property("showListName", defaults.showListName));
@@ -373,7 +475,9 @@
       "list-title", "file-label", "archive-toggle", "options-button", "add-form", "new-note",
       "delete-selected", "archive-toolbar", "clear-archive", "notice", "notes-list", "empty-state", "empty-copy", "edit-dialog",
       "edit-form", "edit-text", "due-toggle", "due-fields", "due-date", "due-time",
-      "options-dialog", "options-form", "list-file", "clear-dialog", "clear-form"
+      "options-dialog", "options-form", "list-file", "delete-list",
+      "delete-list-dialog", "delete-list-form", "delete-list-title", "delete-list-copy",
+      "clear-dialog", "clear-form"
     ].forEach(id => { el[id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = document.getElementById(id); });
     el.addForm.addEventListener("submit", addNote);
     el.deleteSelected.addEventListener("click", () => archiveIds([...state.selected]));
@@ -383,6 +487,9 @@
     el.optionsButton.addEventListener("click", openOptions);
     el.editForm.addEventListener("submit", saveEdit);
     el.optionsForm.addEventListener("submit", saveOptions);
+    el.listFile.addEventListener("change", updateDeleteListButton);
+    el.deleteList.addEventListener("click", openDeleteListDialog);
+    el.deleteListForm.addEventListener("submit", deleteSelectedList);
     el.dueToggle.addEventListener("change", () => {
       el.dueFields.hidden = !el.dueToggle.checked;
       el.dueDate.required = el.dueToggle.checked;
@@ -390,7 +497,7 @@
     });
     document.querySelectorAll("[data-close]").forEach(button =>
       button.addEventListener("click", () => document.getElementById(button.dataset.close).close()));
-    window.addEventListener("storage", event => {
+    window.addEventListener("storage", async event => {
       if (event.key !== STORAGE_KEY) return;
       const refreshed = readStore();
       const current = refreshed.lists.find(list => list.id === state.listId);
@@ -398,8 +505,15 @@
       if (current) {
         state.document = current;
         render();
+      } else {
+        try {
+          await recoverAfterExternalDeletion();
+        } catch (error) {
+          message(`Could not recover after list deletion: ${error.message}`, true);
+        }
       }
     });
+    window.addEventListener("resize", applyPreviewMode);
     updateSettings();
   });
 

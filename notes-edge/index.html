@@ -89,9 +89,29 @@
       <label class="field-label" for="list-file">Stored list</label>
       <select id="list-file"></select>
       <p class="field-hint">Lists are saved inside the widget and remain available when a page widget is removed or replaced.</p>
+      <div class="list-management">
+        <button id="delete-list" class="inline-danger-button" type="button" disabled>
+          <svg class="button-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5"/></svg>
+          <span>Delete selected list</span>
+        </button>
+      </div>
       <div class="dialog-actions">
         <button class="secondary-button" type="button" data-close="options-dialog">Cancel</button>
         <button class="primary-button" type="submit">Use list</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="delete-list-dialog" class="dialog compact">
+    <form id="delete-list-form" method="dialog">
+      <div class="dialog-heading">
+        <div><span class="eyebrow danger-text">PERMANENT ACTION</span><h2 id="delete-list-title">Delete this list?</h2></div>
+        <button class="icon-button" type="button" data-close="delete-list-dialog" aria-label="Close">×</button>
+      </div>
+      <p id="delete-list-copy" class="dialog-copy"></p>
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" data-close="delete-list-dialog">Cancel</button>
+        <button class="destructive-button" type="submit">Permanently delete list</button>
       </div>
     </form>
   </dialog>
