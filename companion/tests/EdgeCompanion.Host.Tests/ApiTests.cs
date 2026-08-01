@@ -17,6 +17,20 @@ public class ApiTests
         Assert.True(OriginPolicy.IsAllowed(origin));
     }
 
+    [Fact]
+    public void Wand_proxy_origin_cannot_access_privileged_companion_apis()
+    {
+        Assert.False(OriginPolicy.IsAllowed("http://127.0.0.1:48621"));
+    }
+
+    [Fact]
+    public void Wand_proxy_only_allows_known_wand_service_hosts()
+    {
+        Assert.True(WandRemoteModule.IsAllowedUpstreamHost("api.wemod.com"));
+        Assert.True(WandRemoteModule.IsAllowedUpstreamHost("mist.wand.com"));
+        Assert.False(WandRemoteModule.IsAllowedUpstreamHost("example.com"));
+    }
+
     [Theory]
     [InlineData("https://example.com")]
     [InlineData("not a URI")]
@@ -132,6 +146,27 @@ public class ApiTests
 
         context.Request.Headers["X-Edge-Token"] = "expected";
         Assert.True(ActionAuthorization.IsAllowed(context.Request, "expected"));
+    }
+
+    [Fact]
+    public void Wand_remote_normalizes_void_head_elements_without_touching_the_body()
+    {
+        const string html = "<!doctype html><html><head><meta charset=\"utf-8\"><title>Wand Remote</title></head><body><meta data-body=\"kept\"></body></html>";
+        var normalized = WandRemoteModule.NormalizeHead(html);
+        Assert.Contains("<meta charset=\"utf-8\" />", normalized);
+        Assert.StartsWith("<!DOCTYPE html>", normalized);
+        Assert.Contains("/wand/bridge.js?v=0.1.8", normalized);
+        Assert.Contains("orientation-prompt{display:none !important;}", normalized);
+        Assert.Contains("<body><meta data-body=\"kept\"></body>", normalized);
+    }
+
+    [Fact]
+    public void Wand_remote_bridge_hides_orientation_prompts_added_after_page_load()
+    {
+        Assert.Contains("MutationObserver", WandRemoteModule.BridgeScript);
+        Assert.Contains("querySelectorAll('orientation-prompt')", WandRemoteModule.BridgeScript);
+        Assert.Contains("setProperty('display','none','important')", WandRemoteModule.BridgeScript);
+        Assert.Contains("input.clone().arrayBuffer()", WandRemoteModule.BridgeScript);
     }
 
     [Fact]

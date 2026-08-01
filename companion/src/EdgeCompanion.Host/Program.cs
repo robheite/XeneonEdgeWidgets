@@ -13,6 +13,7 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<System
 builder.Services.AddSingleton<PublicIpModule>();
 builder.Services.AddSingleton<RouterWanModule>();
 builder.Services.AddSingleton<NordVpnModule>();
+builder.Services.AddSingleton<WandRemoteModule>();
 builder.Services.AddSingleton<StartupModule>();
 builder.Services.AddSingleton<ActionTokenProvider>();
 
@@ -54,10 +55,11 @@ api.MapGet("/health", () => ApiEnvelope.From(new
     uptimeSeconds = (long)(DateTimeOffset.UtcNow - ProcessInfo.StartedAt).TotalSeconds,
 }));
 
-api.MapGet("/capabilities", (NordVpnModule nordVpn, RouterWanModule routerWan, StartupModule startup) =>
+api.MapGet("/capabilities", (NordVpnModule nordVpn, RouterWanModule routerWan, StartupModule startup, WandRemoteModule wandRemote) =>
     ApiEnvelope.From(new object[]
     {
         nordVpn.Capability(),
+        wandRemote.Capability(),
         routerWan.Capability(),
         new { id = "windows-startup", available = startup.Get().Supported },
         new { id = "system-network", available = true },
@@ -171,12 +173,34 @@ var shutdownRegistration = ThreadPool.RegisterWaitForSingleObject(
     millisecondsTimeOutInterval: Timeout.Infinite,
     executeOnlyOnce: true);
 
+var wandProxyBuilder = WebApplication.CreateBuilder();
+wandProxyBuilder.WebHost.UseUrls("http://127.0.0.1:48621");
+wandProxyBuilder.Services.AddSingleton<WandRemoteModule>();
+var wandProxy = wandProxyBuilder.Build();
+wandProxy.MapGet("/wand/bridge.js", () => Results.Content(WandRemoteModule.BridgeScript, "application/javascript"));
+wandProxy.MapGet("/wand/remote/{**path}", async (HttpContext context, string? path, WandRemoteModule module, CancellationToken cancellationToken) =>
+{
+    try { await module.ProxyAsync(context, path, cancellationToken); }
+    catch (HttpRequestException) when (!context.Response.HasStarted)
+    { await Results.Json(ApiEnvelope.Error("remote_unavailable", "Wand Remote is unavailable"), statusCode: 502).ExecuteAsync(context); }
+});
+wandProxy.MapMethods("/wand/upstream/{host}/{**path}", new[] { "GET", "POST" }, async (HttpContext context, string host, string? path, WandRemoteModule module, CancellationToken cancellationToken) =>
+{
+    try { await module.ProxyUpstreamAsync(context, host, path, cancellationToken); }
+    catch (ModuleException) when (!context.Response.HasStarted)
+    { context.Response.StatusCode = StatusCodes.Status404NotFound; }
+    catch (HttpRequestException) when (!context.Response.HasStarted)
+    { await Results.Json(ApiEnvelope.Error("remote_unavailable", "Wand catalog is unavailable"), statusCode: 502).ExecuteAsync(context); }
+});
+await wandProxy.StartAsync();
+
 try
 {
     app.Run();
 }
 finally
 {
+    await wandProxy.StopAsync();
     shutdownRegistration.Unregister(null);
 }
 

@@ -5,8 +5,13 @@ that need capabilities unavailable to iCUE's HTML runtime. It provides narrowly
 scoped modules for application integration, Windows network information, and
 local network protocols.
 
-It listens only on `http://127.0.0.1:48620`. Widgets that do not use a companion
-module create no work for that module.
+Its privileged API listens only on `http://127.0.0.1:48620`. Widgets that do not
+use a companion module create no work for that module.
+
+Wand Remote uses a separate, unprivileged loopback proxy on
+`http://127.0.0.1:48621`. The proxy adapts the fixed Wand Remote service for
+iCUE's embedded browser and cannot reach the Companion's NordVPN, startup, or
+action-token APIs.
 
 ## Install
 
@@ -36,6 +41,9 @@ protocol registration, and remove its startup entry.
 - A random per-user action token protects every state-changing operation and is
   bootstrapped automatically by installed widgets.
 - Router credentials and NordVPN account credentials are not stored.
+- The Wand proxy permits only its fixed Wand and WeMod service hosts. It
+  forwards pairing and live-channel credentials only to those allowlisted hosts
+  and never logs or stores them.
 
 ## Local state
 

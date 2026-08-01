@@ -1,0 +1,24 @@
+{
+  "author": "Robert",
+  "id": "com.robert.wand-remote",
+  "name": "wand-remote",
+  "description": "Open Wand Remote as a touch-first XENEON EDGE widget.",
+  "version": "1.0.0",
+  "preview_icon": "resources/icon.svg",
+  "min_app_version": "5.48",
+  "min_framework_version": "1.0.0",
+  "os": [
+    {
+      "platform": "windows"
+    }
+  ],
+  "supported_devices": [
+    {
+      "type": "dashboard_lcd"
+    }
+  ],
+  "interactive": true,
+  "required_plugins": [
+    "widgetbuilder.linkprovider:Url:1.0"
+  ]
+}

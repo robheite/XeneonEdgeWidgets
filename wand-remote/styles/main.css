@@ -1,0 +1,203 @@
+:root {
+  --ink: #f7f5ff;
+  --muted: #b9b3cd;
+  --violet: #9b7cff;
+  --violet-bright: #b9a5ff;
+  --line: rgba(231, 225, 255, 0.15);
+  --preview-scale: 1;
+  --preview-offset-x: 0px;
+  --preview-offset-y: 0px;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #090711;
+  color: var(--ink);
+  font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 84px;
+  width: 100%;
+  height: 100%;
+  padding: 72px 94px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 84, 255, 0.24), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(77, 52, 164, 0.18), transparent 34%),
+    linear-gradient(135deg, #0d0a18 0%, #07060d 72%);
+}
+
+.stage::after {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 48px 48px;
+  content: "";
+  pointer-events: none;
+}
+
+.identity,
+.launch-card { position: relative; z-index: 1; }
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 42px;
+  border: 1px solid rgba(185, 165, 255, 0.36);
+  border-radius: 28px;
+  background: rgba(155, 124, 255, 0.12);
+}
+
+.mark svg {
+  width: 67px;
+  fill: none;
+  stroke: var(--violet-bright);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: var(--violet-bright);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+h1 {
+  margin: 0;
+  font-size: 72px;
+  font-weight: 680;
+  letter-spacing: -.055em;
+  line-height: .98;
+}
+
+.summary {
+  max-width: 17ch;
+  margin: 25px 0 0;
+  color: var(--muted);
+  font-size: 25px;
+  line-height: 1.42;
+}
+
+.launch-card {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  padding: 42px;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: rgba(26, 21, 40, 0.78);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .28);
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--violet-bright);
+  box-shadow: 0 0 0 7px rgba(155, 124, 255, .12);
+}
+
+.preview-badge {
+  margin-left: auto;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--violet-bright);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.launch-copy { margin-top: 92px; }
+
+h2 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 650;
+  letter-spacing: -.035em;
+}
+
+.launch-copy p {
+  max-width: 38ch;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 78px;
+  margin-top: auto;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 17px;
+  background: var(--violet);
+  color: #100b20;
+  cursor: pointer;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 750;
+  touch-action: manipulation;
+  transition: background-color 140ms ease, transform 120ms ease;
+}
+
+button:hover { background: var(--violet-bright); }
+button:active { transform: scale(.985); }
+button:focus-visible { outline: 4px solid rgba(185, 165, 255, .55); outline-offset: 4px; }
+button svg { width: 30px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+
+.footnote {
+  margin: 18px 0 0;
+  color: #817a96;
+  font-size: 14px;
+  text-align: center;
+}
+
+.preview-mode .stage {
+  width: 1688px;
+  height: 696px;
+  transform: translate(var(--preview-offset-x), var(--preview-offset-y)) scale(var(--preview-scale));
+  transform-origin: top left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button { transition: none; }
+}

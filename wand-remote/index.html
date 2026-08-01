@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>tr('Wand Remote')</title>
+  <link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <meta name="x-icue-property" content="serviceUrl" data-label="tr('Companion service URL')" data-type="textfield" data-default="'http://127.0.0.1:48620'" />
+  <meta name="x-icue-property" content="proxyUrl" data-label="tr('Wand proxy URL')" data-type="textfield" data-default="'http://127.0.0.1:48621'" />
+  <meta name="x-icue-property" content="autoLaunch" data-label="tr('Open Wand automatically')" data-type="switch" data-default="true" />
+  <script type="application/json" id="x-icue-groups">
+    [
+      {"title":"tr('Wand Remote')","properties":["serviceUrl","proxyUrl","autoLaunch"],"info":"tr('Open the Wand web remote when this widget appears on XENEON EDGE.')"}
+    ]
+  </script>
+</head>
+<body>
+  <main class="stage" aria-labelledby="title">
+    <section class="identity" aria-label="Wand Remote">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 96 96"><path d="m25 72 43-43m-4-13 4 13 13 4-13 4-4 13-4-13-13-4 13-4 4-13ZM17 28l2 7 7 2-7 2-2 7-2-7-7-2 7-2 2-7Z"/></svg>
+      </div>
+      <p class="eyebrow">XENEON EDGE</p>
+      <h1 id="title">Wand Remote</h1>
+      <p class="summary">Control your active game without leaving panel mode.</p>
+    </section>
+
+    <section class="launch-card" aria-label="Launch Wand Remote">
+      <div class="status-row">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="status">Ready to connect</span>
+        <span id="preview-badge" class="preview-badge" hidden>EDITOR PREVIEW</span>
+      </div>
+      <div class="launch-copy">
+        <h2 id="launch-title">Open the remote</h2>
+        <p id="launch-detail">Wand must be running on this PC. Your Remote pairing and Pro access are managed by Wand.</p>
+      </div>
+      <button id="launch-button" type="button">
+        <span>Open Wand Remote</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+      </button>
+      <p class="footnote">Switching to another widget and back reloads this launch screen.</p>
+    </section>
+  </main>
+
+  <script src="scripts/main.js"></script>
+  <script>
+    icueEvents = {
+      onICUEInitialized: function () { window.wandRemote.initialize(); },
+      onDataUpdated: function () { window.wandRemote.updateSettings(); }
+    };
+    if (typeof iCUE_initialized !== "undefined" && iCUE_initialized) window.wandRemote.initialize();
+  </script>
+</body>
+</html>

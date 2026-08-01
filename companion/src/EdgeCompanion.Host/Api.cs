@@ -44,7 +44,8 @@ public static class OriginPolicy
         if (origin is "null" or "file://") return true;
         return Uri.TryCreate(origin, UriKind.Absolute, out var uri)
             && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-            && (uri.Host == "127.0.0.1" || uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase));
+            && (uri.Host == "127.0.0.1" || uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+            && uri.Port != 48621;
     }
 }
 

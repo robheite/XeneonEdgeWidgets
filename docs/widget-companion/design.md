@@ -72,12 +72,28 @@ The host contains:
   explicit source metadata.
 - `EdgeCompanion.Modules.NordVpn`: NordVPN discovery, connection status, fastest
   US connection action, and pause orchestration.
+- `EdgeCompanion.Modules.WandRemote`: a fixed localhost proxy for Wand Remote
+  that normalizes its HTML head for iCUE's strict XML parser and forwards only
+  the explicit Wand and WeMod endpoints required by Remote.
 - `EdgeCompanion.Modules.RouterWan`: optional provider interface for a
   router API or an external non-VPN probe.
 
 Modules register fixed routes and fixed actions with the host. They cannot add
 arbitrary cross-origin behavior. A module can be unavailable without taking down
 the host or other modules.
+
+The Wand Remote proxy is not a general-purpose web proxy: it accepts only paths
+under the fixed `https://remote.wand.com/` origin and a small allowlist of Wand
+and WeMod service hosts required for Remote assets, PIN pairing, and Pusher
+channel authorization. It does not accept a URL from a widget and never logs or
+stores Wand credentials. It preserves only the session credentials required for
+those allowlisted upstream calls and rewrites the upstream cookie domain so
+browser-managed session cookies remain scoped to the local proxy origin.
+
+It listens on a separate loopback port (`127.0.0.1:48621`) from the privileged
+Companion API (`127.0.0.1:48620`). The Wand origin receives no action-token,
+NordVPN, startup, or other control routes; the privileged API rejects that proxy
+origin in its CORS policy.
 
 ### API shape
 

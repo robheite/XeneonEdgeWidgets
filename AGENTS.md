@@ -34,6 +34,14 @@ primary target.
 - Keep each widget self-contained. If it uses iCUE common tools or wrappers,
   copy the required files into that widget's own `common/` directory before
   packaging.
+- Every widget `index.html` must include a `<title>tr('Widget Name')</title>`
+  inside `<head>` and a matching `Widget Name` entry in `translation.json`.
+  iCUE parses the head with Qt's strict XML parser: use the uppercase
+  `<!DOCTYPE html>` declaration, and ensure every void element in the
+  head (including `meta` and `link`) must use a self-closing `/>` form. A
+  malformed head is reported by iCUE as the misleading `Missing Title Element`
+  import error. Do not top-level-navigate a widget to an external page unless
+  its head meets this same XML requirement; iCUE reparses the navigated page.
 - Do not commit generated `.icuewidget` packages unless explicitly requested.
 - Preserve the documented iCUE initialization and `onDataUpdated` lifecycle,
   and design for the XENEON EDGE `1688 × 696` landscape canvas.
