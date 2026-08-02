@@ -47,6 +47,12 @@ protocol registration, and remove its startup entry.
 - Actions are fixed and validated; the API is not a general command runner.
 - A random per-user action token protects every state-changing operation and is
   bootstrapped automatically by installed widgets.
+- iCUE loads widgets as local content. To keep that zero-setup action flow,
+  the Companion also accepts the local-file browser origin. Do not open HTML
+  files from downloads, email, or other untrusted sources while Edge Companion
+  is running: a malicious local file could use the same browser privilege to
+  request the action token. Normal websites and the isolated Wand proxy origin
+  cannot access the privileged API.
 - Router credentials and NordVPN account credentials are not stored.
 - The Wand proxy permits only its fixed Wand and WeMod service hosts. It
   forwards pairing and live-channel credentials only to those allowlisted hosts

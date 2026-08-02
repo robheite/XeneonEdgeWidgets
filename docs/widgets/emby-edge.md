@@ -57,7 +57,7 @@ the Emby server's transcoder and may use more server CPU than direct streaming.
 ## Playback troubleshooting
 
 If playback opens to a black screen at 0:00, first confirm the widget header
-shows version 1.0.3 or newer. Older builds requested H.264/AAC even though the
+shows version 1.0.4 or newer. Older builds requested H.264/AAC even though the
 official iCUE Windows widget documentation lists AV1, VP8, and VP9 video codec
 support. Current builds request VP8-family WebM and show the reported codec,
 decoder state, network state, media error code, and decoded frame dimensions if

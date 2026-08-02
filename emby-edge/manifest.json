@@ -3,7 +3,7 @@
   "id": "com.robert.emby-edge",
   "name": "emby-edge",
   "description": "A full-panel Emby library browser and video player for XENEON EDGE.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "preview_icon": "resources/icon.svg",
   "min_app_version": "5.48",
   "min_framework_version": "1.0.0",

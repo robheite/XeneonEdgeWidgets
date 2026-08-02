@@ -61,3 +61,8 @@ The companion generates a random action token in the current user's local
 application data. The iCUE widget retrieves it through the loopback API, and
 state-changing requests are rejected without the token. A manually configured
 `EDGE_COMPANION_TOKEN` remains available for advanced deployments.
+
+Because iCUE widgets run as local content, keep downloaded `.html` files and
+other untrusted local web content closed while Edge Companion is running. The
+automatic token flow intentionally supports the local widget origin; see
+[Edge Companion security](../companion.md#security) for details.

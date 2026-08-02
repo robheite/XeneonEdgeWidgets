@@ -8,6 +8,7 @@
     "docs:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-release-docs.ps1",
     "companion:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-companion.ps1",
     "companion:test": "dotnet test companion/EdgeCompanion.sln --configuration Release",
+    "emby:test": "node tests/emby-dom-safety.mjs",
     "widget:init": "icuewidget init",
     "widget:validate": "icuewidget validate",
     "widget:package": "icuewidget package"

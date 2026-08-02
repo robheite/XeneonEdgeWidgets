@@ -190,7 +190,7 @@ async function browse(parentId, title, push = true) {
 }
 
 function imageUrl(id, width = 420) {
-  return `${state.serviceUrl}/api/v1/emby/items/${id}/image?serverUrl=${encodeURIComponent(state.serverUrl)}&accessToken=${encodeURIComponent(state.session.token)}&width=${width}`;
+  return `${state.serviceUrl}/api/v1/emby/items/${encodeURIComponent(id)}/image?serverUrl=${encodeURIComponent(state.serverUrl)}&accessToken=${encodeURIComponent(state.session.token)}&width=${width}`;
 }
 
 function isPlayableItem(item) {
@@ -209,9 +209,22 @@ function renderItems(items, title) {
     button.type = "button";
     button.className = "card";
     const progress = Math.max(0, Math.min(100, item.UserData?.PlayedPercentage || 0));
-    button.innerHTML = `<div class="poster" style="background-image:url('${imageUrl(item.Id)}')">${progress ? `<span class="progress"><i style="width:${progress}%"></i></span>` : ""}</div><strong></strong><small></small>`;
-    button.querySelector("strong").textContent = item.Name;
-    button.querySelector("small").textContent = item.ProductionYear || item.Type || "";
+    const poster = document.createElement("div");
+    poster.className = "poster";
+    poster.style.backgroundImage = `url("${imageUrl(item.Id).replaceAll('"', '%22')}")`;
+    if (progress) {
+      const progressRoot = document.createElement("span");
+      progressRoot.className = "progress";
+      const progressBar = document.createElement("i");
+      progressBar.style.width = `${progress}%`;
+      progressRoot.append(progressBar);
+      poster.append(progressRoot);
+    }
+    const name = document.createElement("strong");
+    name.textContent = item.Name;
+    const detail = document.createElement("small");
+    detail.textContent = item.ProductionYear || item.Type || "";
+    button.append(poster, name, detail);
     button.onclick = () => item.IsFolder ? browse(item.Id, item.Name) : showDetails(item.Id);
     return button;
   }));
