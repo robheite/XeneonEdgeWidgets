@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>tr('Emby Edge')</title>
+  <link rel="icon" href="resources/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/media-options.css" />
+  <link rel="stylesheet" href="styles/player-controls.css" />
+  <meta name="x-icue-property" content="embyServer" data-label="tr('Emby server')" data-type="textfield" data-default="'http://192.168.1.11:8096/'" />
+  <meta name="x-icue-property" content="serviceUrl" data-label="tr('Companion service URL')" data-type="textfield" data-default="'http://127.0.0.1:48620'" />
+  <script type="application/json" id="x-icue-groups">[{"title":"tr('Connection')","properties":["embyServer","serviceUrl"]}]</script>
+</head>
+<body>
+  <main id="app" class="app">
+    <aside class="rail">
+      <header class="brand"><span class="brand-mark">▶</span><strong>Emby</strong><span>Edge</span><small class="build">v1.0.3</small></header>
+      <form id="search-form" class="search"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search media" autocomplete="off" aria-label="Search media" /></form>
+      <label class="scope"><span>SEARCH IN</span><select id="search-scope"><option value="">All libraries</option></select></label>
+      <nav id="libraries" class="libraries" aria-label="Libraries"></nav>
+      <footer class="account"><button id="user-button" type="button"><span id="avatar">?</span><span><strong id="user-name">Choose user</strong><small id="server-name">Not connected</small></span></button></footer>
+    </aside>
+
+    <section class="stage">
+      <div id="status" class="status" role="status" aria-live="polite">Connecting to Emby…</div>
+      <div id="browser" class="browser" hidden>
+        <header class="browser-head"><div><button id="back-button" class="back" type="button" hidden>←</button><span id="view-kicker">LIBRARY</span><h1 id="view-title">Browse</h1></div><span id="item-count"></span></header>
+        <div id="items" class="items"></div>
+      </div>
+      <article id="details" class="details" hidden>
+        <button id="details-back" class="back floating" type="button">← Browse</button>
+        <div id="backdrop" class="backdrop"></div>
+        <div class="details-copy"><span id="item-type" class="kicker"></span><h1 id="item-title"></h1><p id="item-meta" class="meta"></p><p id="item-overview" class="overview"></p><div id="media-options" class="media-options" hidden><label id="media-source-label">Version<select id="media-source"></select></label><label>Audio<select id="audio-track"></select></label><label>Subtitles<select id="subtitle-track"></select></label></div><div class="detail-actions"><button id="play-button" class="play" type="button">▶ Play</button><button id="watched-button" class="quiet" type="button">✓ Mark watched</button></div></div>
+      </article>
+      <section id="player-shell" class="player-shell" hidden>
+        <video id="player" class="player" playsinline aria-label="Video playback"></video>
+        <button id="close-player" class="close-player" type="button" aria-label="Close player">×</button>
+        <div class="now-playing"><small>NOW PLAYING</small><strong id="playing-title"></strong></div>
+        <div id="player-message" class="player-message" role="status" aria-live="polite">Preparing compatible video and audio…</div>
+        <div id="player-controls" class="player-controls" role="toolbar" aria-label="Playback controls">
+          <button id="previous-button" class="player-control" type="button" aria-label="Previous title" title="Previous title"><span aria-hidden="true">|◀</span></button>
+          <button id="toggle-play" class="player-control primary-control" type="button" aria-label="Pause" title="Play or pause"><span id="play-icon" aria-hidden="true">❚❚</span></button>
+          <button id="next-button" class="player-control" type="button" aria-label="Next title" title="Next title"><span aria-hidden="true">▶|</span></button>
+          <button id="captions-button" class="player-control captions-control" type="button" aria-label="Turn captions on" aria-pressed="false" title="Captions"><span aria-hidden="true">CC</span></button>
+          <div class="volume-control" role="group" aria-label="Volume controls">
+            <button id="mute-button" class="player-control" type="button" aria-label="Mute" aria-pressed="false" title="Mute"><span id="volume-icon" aria-hidden="true">🔊</span></button>
+            <input id="volume-slider" type="range" min="0" max="100" step="1" value="100" aria-label="Volume" />
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <dialog id="login-dialog" class="dialog">
+      <form id="login-form" method="dialog"><header><span class="kicker">EMBY SERVER</span><h2>Who’s watching?</h2></header><div id="public-users" class="public-users"></div><label>Username<input id="username" type="text" autocomplete="username" /></label><label>Password<input id="password" type="password" autocomplete="current-password" /></label><p id="login-error" class="error"></p><button class="play" type="submit">Sign in</button></form>
+    </dialog>
+  </main>
+  <script src="scripts/main.js"></script>
+  <script>
+    icueEvents = { onICUEInitialized: function () { window.embyEdge.updateSettings(); }, onDataUpdated: function () { window.embyEdge.updateSettings(); } };
+    if (typeof iCUE_initialized !== "undefined" && iCUE_initialized) window.embyEdge.updateSettings();
+  </script>
+</body>
+</html>

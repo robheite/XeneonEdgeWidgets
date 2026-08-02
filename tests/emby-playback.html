@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><title>Emby playback regression</title></head>
+<body style="margin:0;background:#000;color:#fff;font-family:sans-serif">
+  <button id="start" type="button" style="position:absolute;z-index:2;padding:16px">Start AV test</button>
+  <video id="player" controls playsinline style="width:100vw;height:100vh"></video>
+  <script>
+    document.getElementById("start").addEventListener("click", async () => {
+      const player = document.getElementById("player");
+      player.muted = false;
+      player.volume = 1;
+      player.src = "http://127.0.0.1:48620/api/v1/emby/videos/test-item/stream.webm?serverUrl=http%3A%2F%2F127.0.0.1%3A8097%2F&accessToken=test-token&mediaSourceId=test-source&playSessionId=test-session&audioStreamIndex=1";
+      await player.play();
+      document.getElementById("start").hidden = true;
+    });
+  </script>
+</body>
+</html>

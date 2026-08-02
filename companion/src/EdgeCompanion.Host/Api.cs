@@ -44,8 +44,7 @@ public static class OriginPolicy
         if (origin is "null" or "file://") return true;
         return Uri.TryCreate(origin, UriKind.Absolute, out var uri)
             && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-            && (uri.Host == "127.0.0.1" || uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
-            && uri.Port != 48621;
+            && uri.Host == "127.0.0.1";
     }
 }
 
@@ -71,3 +70,20 @@ public sealed class ModuleException(string code, string message, int statusCode 
 }
 
 public sealed record PauseRequest(int Minutes);
+
+public sealed class ProxyResponseResult(HttpResponseMessage response, string fallbackContentType) : IResult
+{
+    public async Task ExecuteAsync(HttpContext context)
+    {
+        using (response)
+        {
+            context.Response.StatusCode = (int)response.StatusCode;
+            context.Response.ContentType = response.Content.Headers.ContentType?.ToString() ?? fallbackContentType;
+            context.Response.ContentLength = response.Content.Headers.ContentLength;
+            if (response.Content.Headers.ContentRange is not null) context.Response.Headers.ContentRange = response.Content.Headers.ContentRange.ToString();
+            if (response.Headers.AcceptRanges.Contains("bytes")) context.Response.Headers.AcceptRanges = "bytes";
+            await using var stream = await response.Content.ReadAsStreamAsync(context.RequestAborted);
+            await stream.CopyToAsync(context.Response.Body, context.RequestAborted);
+        }
+    }
+}

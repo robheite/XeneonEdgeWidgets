@@ -17,7 +17,7 @@ you can use it without switching iCUE out of panel mode.
 2. Install and start [Edge Companion](../companion.md).
 3. Add **Wand Remote** to an XENEON EDGE page. Its default settings use the
    Companion API at `http://127.0.0.1:48620` and the local Wand proxy at
-   `http://127.0.0.1:48621`.
+   `http://localhost:48620`.
 4. Open Wand on this PC and obtain its Remote PIN.
 5. Enter the PIN on the panel. A successful pairing connects the panel to the
    active Wand session; start or select a game in Wand when you want its
@@ -29,11 +29,12 @@ store, or display your Wand password.
 ## Settings
 
 - **Companion service URL** — normally `http://127.0.0.1:48620`.
-- **Wand proxy URL** — normally `http://127.0.0.1:48621`.
+- **Wand proxy URL** — normally `http://localhost:48620`; the hostname deliberately differs from the trusted API origin.
 - **Open Wand automatically** — opens the Remote as soon as the widget loads.
 
 Leave both URLs at their defaults unless you intentionally run Edge Companion
-on different loopback ports.
+on a different loopback port. Updated widgets automatically map the legacy
+`127.0.0.1:48621` proxy setting to the shared `localhost:48620` listener.
 
 ## Troubleshooting
 

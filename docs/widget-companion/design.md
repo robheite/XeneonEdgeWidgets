@@ -75,6 +75,8 @@ The host contains:
 - `EdgeCompanion.Modules.WandRemote`: a fixed localhost proxy for Wand Remote
   that normalizes its HTML head for iCUE's strict XML parser and forwards only
   the explicit Wand and WeMod endpoints required by Remote.
+- `EdgeCompanion.Modules.Emby`: a private-network-only Emby client bridge for
+  user authentication, browsing, images, video streams, and playback state.
 - `EdgeCompanion.Modules.RouterWan`: optional provider interface for a
   router API or an external non-VPN probe.
 
@@ -90,8 +92,9 @@ stores Wand credentials. It preserves only the session credentials required for
 those allowlisted upstream calls and rewrites the upstream cookie domain so
 browser-managed session cookies remain scoped to the local proxy origin.
 
-It listens on a separate loopback port (`127.0.0.1:48621`) from the privileged
-Companion API (`127.0.0.1:48620`). The Wand origin receives no action-token,
+It shares the companion listener on port `48620`, using `localhost` as a
+separate browser origin from the privileged Companion API at
+`127.0.0.1:48620`. The Wand origin receives no action-token,
 NordVPN, startup, or other control routes; the privileged API rejects that proxy
 origin in its CORS policy.
 

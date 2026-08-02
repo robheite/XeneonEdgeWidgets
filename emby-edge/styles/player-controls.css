@@ -1,0 +1,132 @@
+.player-shell {
+  touch-action: manipulation;
+}
+
+.player {
+  display: block;
+}
+
+.close-player {
+  width: 52px;
+  height: 52px;
+}
+
+.close-player:disabled {
+  opacity: .4;
+}
+
+.player-controls {
+  position: absolute;
+  z-index: 7;
+  right: 24px;
+  bottom: 20px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 76px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(10, 10, 11, .88);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .4);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.player-control {
+  display: grid;
+  place-items: center;
+  min-width: 54px;
+  height: 54px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 12px;
+  background: rgba(36, 36, 39, .94);
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.player-control:hover {
+  border-color: rgba(228, 255, 56, .7);
+  background: #323236;
+}
+
+.player-control:active {
+  transform: scale(.96);
+}
+
+.player-control:disabled {
+  cursor: default;
+  opacity: .34;
+}
+
+.primary-control {
+  min-width: 62px;
+  height: 62px;
+  border: 0;
+  background: var(--ember);
+  color: #101010;
+  font-size: 23px;
+}
+
+.captions-control {
+  font-size: 16px;
+  letter-spacing: .04em;
+}
+
+.captions-control[aria-pressed="true"] {
+  border-color: var(--ember);
+  background: var(--ember);
+  color: #101010;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 8px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+}
+
+.volume-control input {
+  width: 180px;
+  height: 44px;
+  accent-color: var(--ember);
+  touch-action: none;
+}
+
+.close-player,
+.now-playing {
+  z-index: 7;
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.player-shell.controls-hidden {
+  cursor: none;
+}
+
+.player-shell.controls-hidden .player-controls {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.player-shell.controls-hidden .close-player,
+.player-shell.controls-hidden .now-playing {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-controls,
+  .close-player,
+  .now-playing {
+    transition: none !important;
+  }
+}

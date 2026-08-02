@@ -11,16 +11,15 @@ public class ApiTests
     [InlineData("null")]
     [InlineData("file://")]
     [InlineData("http://127.0.0.1")]
-    [InlineData("http://localhost:48620")]
     public void Local_widget_origins_are_allowed(string origin)
     {
         Assert.True(OriginPolicy.IsAllowed(origin));
     }
 
     [Fact]
-    public void Wand_proxy_origin_cannot_access_privileged_companion_apis()
+    public void Wand_proxy_origin_cannot_receive_privileged_cors_access()
     {
-        Assert.False(OriginPolicy.IsAllowed("http://127.0.0.1:48621"));
+        Assert.False(OriginPolicy.IsAllowed("http://localhost:48620"));
     }
 
     [Fact]
@@ -38,6 +37,41 @@ public class ApiTests
     public void Non_local_origins_are_rejected(string origin)
     {
         Assert.False(OriginPolicy.IsAllowed(origin));
+    }
+
+    [Theory]
+    [InlineData("192.168.1.11", true)]
+    [InlineData("10.0.0.4", true)]
+    [InlineData("172.20.1.2", true)]
+    [InlineData("8.8.8.8", false)]
+    [InlineData("emby.example.com", false)]
+    public void Emby_proxy_only_accepts_local_network_hosts(string host, bool expected)
+    {
+        Assert.Equal(expected, EmbyModule.IsLocalHost(host));
+    }
+
+    [Fact]
+    public void Emby_server_validation_rejects_public_hosts()
+    {
+        var exception = Assert.Throws<ModuleException>(() => EmbyModule.ValidateServer("https://example.com"));
+        Assert.Equal("invalid_emby_server", exception.Code);
+    }
+
+    [Fact]
+    public void Emby_transcode_path_forces_icue_supported_video_and_audio()
+    {
+        var path = EmbyModule.BuildVideoStreamPath("item 1", "source 2", "session 3", 4, 5, 123456789);
+
+        Assert.StartsWith("Videos/item%201/stream.webm?", path);
+        Assert.Contains("VideoCodec=vpx", path);
+        Assert.Contains("AudioCodec=vorbis", path);
+        Assert.Contains("MaxVideoBitDepth=8", path);
+        Assert.Contains("MaxAudioChannels=2", path);
+        Assert.Contains("AudioStreamIndex=4", path);
+        Assert.Contains("SubtitleStreamIndex=5", path);
+        Assert.Contains("SubtitleMethod=Encode", path);
+        Assert.Contains("StartTimeTicks=123456789", path);
+        Assert.DoesNotContain("Static=true", path);
     }
 
     [Fact]

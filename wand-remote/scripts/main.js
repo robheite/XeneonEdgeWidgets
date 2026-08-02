@@ -2,8 +2,9 @@
   "use strict";
 
   const DEFAULT_SERVICE_URL = "http://127.0.0.1:48620";
-  const DEFAULT_PROXY_URL = "http://127.0.0.1:48621";
-  const PROXY_CACHE_KEY = "edge-panel-0.1.6";
+  const DEFAULT_PROXY_URL = "http://localhost:48620";
+  const LEGACY_PROXY_URLS = new Set(["http://127.0.0.1:48621", "http://localhost:48621"]);
+  const PROXY_CACHE_KEY = "edge-panel-0.1.7";
   let initialized = false;
   let launchTimer = null;
 
@@ -22,7 +23,8 @@
 
   function getProxyUrl() {
     const configured = typeof proxyUrl === "undefined" ? DEFAULT_PROXY_URL : String(proxyUrl || DEFAULT_PROXY_URL);
-    return configured.replace(/\/+$/, "");
+    const normalized = configured.replace(/\/+$/, "");
+    return LEGACY_PROXY_URLS.has(normalized.toLowerCase()) ? DEFAULT_PROXY_URL : normalized;
   }
 
   function updatePreviewLayout() {

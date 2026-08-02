@@ -28,6 +28,7 @@ See [Installing widgets](docs/installing-widgets.md) and
 | NordVPN Edge | Yes | [Features and setup](docs/widgets/nordvpn-edge.md) |
 | Notes Edge | No | [Features and setup](docs/widgets/notes-edge.md) |
 | Wand Remote | Yes | [Features and setup](docs/widgets/wand-remote.md) |
+| Emby Edge | Yes | [Features and setup](docs/widgets/emby-edge.md) |
 
 ## Repository structure
 
@@ -38,6 +39,7 @@ companion/        Shared modular .NET companion
 nordvpn-edge/     Self-contained NordVPN widget
 notes-edge/       Self-contained persistent notes widget
 wand-remote/      Wand Remote panel widget
+emby-edge/        Full-panel Emby browser and video player
 docs/widgets/     User documentation for each widget
 scripts/          Development and release checks
 ```
@@ -70,6 +72,8 @@ npm run widget:validate -- notes-edge
 npm run widget:package -- notes-edge
 npm run widget:validate -- wand-remote
 npm run widget:package -- wand-remote
+npm run widget:validate -- emby-edge
+npm run widget:package -- emby-edge
 ```
 
 Run companion tests and start it locally:

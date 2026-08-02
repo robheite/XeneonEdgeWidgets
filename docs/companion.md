@@ -8,10 +8,17 @@ local network protocols.
 Its privileged API listens only on `http://127.0.0.1:48620`. Widgets that do not
 use a companion module create no work for that module.
 
-Wand Remote uses a separate, unprivileged loopback proxy on
-`http://127.0.0.1:48621`. The proxy adapts the fixed Wand Remote service for
-iCUE's embedded browser and cannot reach the Companion's NordVPN, startup, or
-action-token APIs.
+Wand Remote uses an unprivileged loopback origin at
+`http://localhost:48620`. It shares the companion's single listener, but its
+hostname creates a browser origin distinct from trusted APIs at `127.0.0.1`.
+The proxy adapts Wand Remote for iCUE's embedded browser and cannot reach the
+Companion's NordVPN, startup, or action-token APIs.
+
+The Emby module proxies only local and private-network servers. It keeps Emby
+authentication, library browsing, images, range-enabled video streaming, and
+playback check-ins behind the same loopback listener. HTTP redirects are not
+followed, preventing a configured LAN server from redirecting the companion to
+an unapproved public address.
 
 ## Install
 

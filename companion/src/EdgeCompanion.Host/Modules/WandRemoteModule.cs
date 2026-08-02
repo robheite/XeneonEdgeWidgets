@@ -18,7 +18,7 @@ public sealed class WandRemoteModule : IDisposable
     private static readonly Regex CookieDomain = new(@";\s*Domain=[^;]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private readonly HttpClient _client = new(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false }) { Timeout = TimeSpan.FromSeconds(20) };
 
-    public object Capability() => new { id = "wand-remote", available = true, actions = Array.Empty<string>(), remoteUrl = "http://127.0.0.1:48621/wand/remote/" };
+    public object Capability() => new { id = "wand-remote", available = true, actions = Array.Empty<string>(), remoteUrl = "http://localhost:48620/wand/remote/" };
 
     public async Task ProxyAsync(HttpContext context, string? path, CancellationToken cancellationToken)
     {

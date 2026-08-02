@@ -1,0 +1,147 @@
+.app {
+  width: 100%;
+  height: 100%;
+}
+
+.brand .build {
+  margin-left: auto;
+  color: #6f6f73;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+}
+
+.items {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  align-content: start;
+}
+
+.details {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(255, 255, 255, .28) transparent;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.details .backdrop {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  margin: 0;
+}
+
+.details::-webkit-scrollbar {
+  width: 9px;
+}
+
+.details::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, .18);
+}
+
+.details::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .34);
+  background-clip: padding-box;
+}
+
+.player-message {
+  position: absolute;
+  left: 50%;
+  bottom: 112px;
+  z-index: 6;
+  max-width: min(70%, 680px);
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(10, 10, 11, .88);
+  color: var(--muted);
+  font-size: 14px;
+  transform: translateX(-50%);
+}
+
+.player-message.error {
+  color: var(--danger);
+}
+
+.details-copy {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: min(68%, 860px);
+  min-height: 100%;
+  margin-left: 54px;
+  padding: min(44vh, 310px) 0 46px;
+}
+
+.details .floating {
+  position: sticky;
+  top: 28px;
+  left: auto;
+  z-index: 4;
+  margin: 0 0 -44px 32px;
+}
+
+.media-options {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.media-options.single-source {
+  grid-template-columns: 1fr 1fr;
+}
+
+.media-options label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.media-options select {
+  min-width: 0;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #1b1b1e;
+  color: var(--ink);
+}
+
+.media-options + .detail-actions {
+  margin-top: 20px;
+}
+
+@media (max-height: 600px) {
+  .dialog form {
+    gap: 10px;
+    padding: 18px 24px;
+  }
+
+  .dialog h2 {
+    font-size: 26px;
+  }
+
+  .public-users {
+    gap: 7px;
+  }
+
+  .user-choice {
+    padding: 9px 7px;
+  }
+
+  .dialog input {
+    height: 40px;
+  }
+
+  .dialog .play {
+    min-height: 44px;
+  }
+}

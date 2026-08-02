@@ -18,6 +18,9 @@ GitHub Actions workflow.
    npm run docs:verify
    npm run companion:test
    npm run widget:validate -- nordvpn-edge
+   npm run widget:validate -- notes-edge
+   npm run widget:validate -- wand-remote
+   npm run widget:validate -- emby-edge
    ```
 
 6. Merge the intended release commit into `main`.
